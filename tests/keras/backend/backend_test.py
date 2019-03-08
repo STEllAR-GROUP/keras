@@ -1100,16 +1100,16 @@ class TestBackend(object):
     #    check_single_tensor_operation('relu', (4, 2), WITH_NP, alpha=alpha,
     #                                  max_value=max_value, threshold=threshold)
 
-    #def test_nn_operations(self):
-    #    check_single_tensor_operation('softsign', (4, 10), WITH_NP)
-    #    check_single_tensor_operation('softplus', (4, 10), WITH_NP)
-    #    check_single_tensor_operation('elu', (4, 10), WITH_NP, alpha=0.5)
+    def test_nn_operations(self):
+        check_single_tensor_operation('softsign', (4, 10), WITH_NP)
+        check_single_tensor_operation('softplus', (4, 10), WITH_NP)
+        check_single_tensor_operation('elu', (4, 10), WITH_NP, alpha=0.5)
 
-    #    check_single_tensor_operation('sigmoid', (4, 2), WITH_NP)
-    #    check_single_tensor_operation('hard_sigmoid', (4, 2), WITH_NP)
-    #    check_single_tensor_operation('tanh', (4, 2), WITH_NP)
+        check_single_tensor_operation('sigmoid', (4, 2), WITH_NP)
+        check_single_tensor_operation('hard_sigmoid', (4, 2), WITH_NP)
+        check_single_tensor_operation('tanh', (4, 2), WITH_NP)
 
-    #    check_single_tensor_operation('softmax', (4, 10), WITH_NP)
+        check_single_tensor_operation('softmax', (4, 10), WITH_NP)
     #    check_single_tensor_operation('softmax', (4, 5, 3), WITH_NP, axis=1)
     #    check_single_tensor_operation('softmax', (4, 5, 3, 10), WITH_NP, axis=2)
 
@@ -1344,36 +1344,36 @@ class TestBackend(object):
     #            padding=padding, data_format=data_format))
     #    assert_allclose(y1, y2, atol=1e-05)
 
-    #def test_random_normal(self):
-    #    # test standard normal as well as a normal with a different set of parameters
-    #    for mean, std in [(0., 1.), (-10., 5.)]:
-    #        rand = K.eval(K.random_normal((300, 200),
-    #                                      mean=mean, stddev=std, seed=1337))
-    #        assert rand.shape == (300, 200)
-    #        assert np.abs(np.mean(rand) - mean) < std * 0.015
-    #        assert np.abs(np.std(rand) - std) < std * 0.015
+    def test_random_normal(self):
+        # test standard normal as well as a normal with a different set of parameters
+        for mean, std in [(0., 1.), (-10., 5.)]:
+            rand = K.eval(K.random_normal((300, 200),
+                                          mean=mean, stddev=std, seed=1337))
+            assert rand.shape == (300, 200)
+            assert np.abs(np.mean(rand) - mean) < std * 0.015
+            assert np.abs(np.std(rand) - std) < std * 0.015
 
-    #        # test that random_normal also generates different values when used
-    #        # within a function
-    #        r = K.random_normal((10, 10), mean=mean, stddev=std, seed=1337)
-    #        samples = np.array([K.eval(r) for _ in range(200)])
-    #        assert np.abs(np.mean(samples) - mean) < std * 0.015
-    #        assert np.abs(np.std(samples) - std) < std * 0.015
+            # test that random_normal also generates different values when used
+            # within a function
+            r = K.random_normal((10, 10), mean=mean, stddev=std, seed=1337)
+            samples = np.array([K.eval(r) for _ in range(200)])
+            assert np.abs(np.mean(samples) - mean) < std * 0.015
+            assert np.abs(np.std(samples) - std) < std * 0.015
 
-    #def test_random_uniform(self):
-    #    min_val = -1.
-    #    max_val = 1.
-    #    rand = K.eval(K.random_uniform((200, 100), min_val, max_val))
-    #    assert rand.shape == (200, 100)
-    #    assert np.abs(np.mean(rand)) < 0.015
-    #    assert max_val - 0.015 < np.max(rand) <= max_val
-    #    assert min_val + 0.015 > np.min(rand) >= min_val
+    def test_random_uniform(self):
+        min_val = -1.
+        max_val = 1.
+        rand = K.eval(K.random_uniform((200, 100), min_val, max_val))
+        assert rand.shape == (200, 100)
+        assert np.abs(np.mean(rand)) < 0.015
+        assert max_val - 0.015 < np.max(rand) <= max_val
+        assert min_val + 0.015 > np.min(rand) >= min_val
 
-    #    r = K.random_uniform((10, 10), minval=min_val, maxval=max_val)
-    #    samples = np.array([K.eval(r) for _ in range(200)])
-    #    assert np.abs(np.mean(samples)) < 0.015
-    #    assert max_val - 0.015 < np.max(samples) <= max_val
-    #    assert min_val + 0.015 > np.min(samples) >= min_val
+        r = K.random_uniform((10, 10), minval=min_val, maxval=max_val)
+        samples = np.array([K.eval(r) for _ in range(200)])
+        assert np.abs(np.mean(samples)) < 0.015
+        assert max_val - 0.015 < np.max(samples) <= max_val
+        assert min_val + 0.015 > np.min(samples) >= min_val
 
     #def test_random_binomial(self):
     #    p = 0.5
