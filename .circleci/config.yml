@@ -31,7 +31,7 @@ jobs:
                 command: find . -name '*.pyc' -delete
             - run:
                 environment:
-                    KERAS_BACKED=phylanx
+                    KERAS_BACKED: phylanx
                 command: |
                     py.test tests/ -v -k backend \
                         --ignore=tests/integration_tests \
