@@ -169,6 +169,8 @@ def batch_flatten_eager(x):
 def batch_flatten(x):
 	return batch_flatten_eager.lazy(x)
 
+
+# needs 4d
 @Phylanx
 def expand_dims_eager(x, axis):
 	return np.expand_dims(x, axis)

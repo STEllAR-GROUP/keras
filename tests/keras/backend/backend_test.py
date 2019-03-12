@@ -1829,51 +1829,51 @@ class TestBackend(object):
 
     #    assert np.allclose(log_prob_truth, log_prob_pred)
 
-    @pytest.mark.skipif(K.backend() != 'tensorflow',
-                        reason='Beam search is only implemented with '
-                               'the TensorFlow backend.')
-    def test_ctc_decode_beam_search_no_merge(self):
-        # A simple CTC probability map with some repeating characters,
-        # shape(batch, input_width, char_count)
-        # Without merging should be decoded as: "AABB", with merging as: "AB".
-        input_prob = np.array([
-            [  # blank, A ,B
-                [0, 0, 1],  # blank
-                [1, 0, 0],  # A
-                [0, 0, 1],  # blank
-                [1, 0, 0],  # A
-                [0, 1, 0],  # B
-                [0, 0, 1],  # blank
-                [0, 1, 0]  # B
-            ]
-        ])
-        input_len = np.array(input_prob.shape[0] * [input_prob.shape[1]])
+    #@pytest.mark.skipif(K.backend() != 'tensorflow',
+    #                    reason='Beam search is only implemented with '
+    #                           'the TensorFlow backend.')
+    #def test_ctc_decode_beam_search_no_merge(self):
+    #    # A simple CTC probability map with some repeating characters,
+    #    # shape(batch, input_width, char_count)
+    #    # Without merging should be decoded as: "AABB", with merging as: "AB".
+    #    input_prob = np.array([
+    #        [  # blank, A ,B
+    #            [0, 0, 1],  # blank
+    #            [1, 0, 0],  # A
+    #            [0, 0, 1],  # blank
+    #            [1, 0, 0],  # A
+    #            [0, 1, 0],  # B
+    #            [0, 0, 1],  # blank
+    #            [0, 1, 0]  # B
+    #        ]
+    #    ])
+    #    input_len = np.array(input_prob.shape[0] * [input_prob.shape[1]])
 
-        def decode(merge_repeated):
-            input_prob_tensor = K.placeholder(shape=(None, None, None),
-                                              dtype='float32')
-            input_len_tensor = K.placeholder(shape=(None), dtype='int64')
-            paths_tensors, _ = K.ctc_decode(input_prob_tensor, input_len_tensor,
-                                            greedy=False, beam_width=1, top_paths=1,
-                                            merge_repeated=merge_repeated)
-            decode_func = K.function([input_prob_tensor, input_len_tensor],
-                                     paths_tensors)
-            paths = decode_func([input_prob, input_len])
-            return paths
+    #    def decode(merge_repeated):
+    #        input_prob_tensor = K.placeholder(shape=(None, None, None),
+    #                                          dtype='float32')
+    #        input_len_tensor = K.placeholder(shape=(None), dtype='int64')
+    #        paths_tensors, _ = K.ctc_decode(input_prob_tensor, input_len_tensor,
+    #                                        greedy=False, beam_width=1, top_paths=1,
+    #                                        merge_repeated=merge_repeated)
+    #        decode_func = K.function([input_prob_tensor, input_len_tensor],
+    #                                 paths_tensors)
+    #        paths = decode_func([input_prob, input_len])
+    #        return paths
 
-        # merged: A B
-        assert np.allclose(decode(merge_repeated=True), [np.array([[0, 1]])])
-        # not merged: A A B B
-        assert np.allclose(decode(merge_repeated=False), [np.array([[0, 0, 1, 1]])])
+    #    # merged: A B
+    #    assert np.allclose(decode(merge_repeated=True), [np.array([[0, 1]])])
+    #    # not merged: A A B B
+    #    assert np.allclose(decode(merge_repeated=False), [np.array([[0, 0, 1, 1]])])
 
-    def test_one_hot(self):
-        input_length = 10
-        num_classes = 20
-        batch_size = 30
-        indices = np.random.randint(0, num_classes, size=(batch_size, input_length))
-        oh = KNP.one_hot(np.int32(indices), num_classes)
-        koh = K.eval(K.one_hot(K.variable(indices, dtype='int32'), num_classes))
-        assert np.all(koh == oh)
+    #def test_one_hot(self):
+    #    input_length = 10
+    #    num_classes = 20
+    #    batch_size = 30
+    #    indices = np.random.randint(0, num_classes, size=(batch_size, input_length))
+    #    oh = KNP.one_hot(np.int32(indices), num_classes)
+    #    koh = K.eval(K.one_hot(K.variable(indices, dtype='int32'), num_classes))
+    #    assert np.all(koh == oh)
 
     #@pytest.mark.skipif(not supports_sparse,
     #                    reason='Sparse tensors are not supported in cntk '
@@ -2072,15 +2072,15 @@ class TestBackend(object):
         assert np.allclose(K.eval(K.clip(x_k, min_val_k, max_val_k)),
                            KNP.eval(KNP.clip(x, min_val, max_val)))
 
-    @pytest.mark.skipif(K.backend() != 'tensorflow',
-                        reason='This test is for tensorflow parallelism.')
-    def test_tensorflow_session_parallelism_settings(self, monkeypatch):
-        for threads in [0, 1, 4]:
-            K.clear_session()
-            monkeypatch.setenv('OMP_NUM_THREADS', str(threads))
-            cfg = K.get_session()._config
-            assert cfg.intra_op_parallelism_threads == threads
-            assert cfg.inter_op_parallelism_threads == threads
+    #@pytest.mark.skipif(K.backend() != 'tensorflow',
+    #                    reason='This test is for tensorflow parallelism.')
+    #def test_tensorflow_session_parallelism_settings(self, monkeypatch):
+    #    for threads in [0, 1, 4]:
+    #        K.clear_session()
+    #        monkeypatch.setenv('OMP_NUM_THREADS', str(threads))
+    #        cfg = K.get_session()._config
+    #        assert cfg.intra_op_parallelism_threads == threads
+    #        assert cfg.inter_op_parallelism_threads == threads
 
 if __name__ == '__main__':
     pytest.main([__file__])
