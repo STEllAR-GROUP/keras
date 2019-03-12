@@ -24,7 +24,7 @@ except ImportError:
 try:
     from keras.backend import phylanx_backend as KPH
 except ImportError:
-    KTF = None
+    KPH = None
     warnings.warn('Could not import the Phylanx backend.')
 
 try:
@@ -123,11 +123,8 @@ def check_single_tensor_operation(function_name,
                 t, f = cntk_func_tensors(function_name, [x_shape], **kwargs)
                 z = f([x_val])[0]
             else:
-                print("x_val",x_val)
-                print("kwargs",kwargs)
                 t = getattr(k, function_name)(k.variable(x_val), **kwargs)
                 z = k.eval(t)
-                print(z)
         else:
             t = getattr(k, function_name)(x_shape_or_val, **kwargs)
             z = k.eval(t)
@@ -1113,7 +1110,7 @@ class TestBackend(object):
         check_single_tensor_operation('tanh', (4, 2), WITH_NP)
 
         check_single_tensor_operation('softmax', (4, 10), WITH_NP)
-    #    check_single_tensor_operation('softmax', (4, 5, 3), WITH_NP, axis=1)
+        check_single_tensor_operation('softmax', (4, 5, 3), WITH_NP, axis=1)
     #    check_single_tensor_operation('softmax', (4, 5, 3, 10), WITH_NP, axis=2)
 
     #    check_single_tensor_operation('l2_normalize', (4, 3), WITH_NP, axis=-1)
@@ -1392,20 +1389,20 @@ class TestBackend(object):
         assert np.max(samples) == 1
         assert np.min(samples) == 0
 
-    #def test_truncated_normal(self):
-    #    mean = 0.
-    #    std = 1.
-    #    min_val = -2.
-    #    max_val = 2.
-    #    rand = K.eval(K.truncated_normal((300, 200),
-    #                                     mean=mean, stddev=std, seed=1337))
-    #    assert rand.shape == (300, 200)
-    #    assert np.abs(np.mean(rand) - mean) < 0.015
-    #    assert np.max(rand) <= max_val
-    #    assert np.min(rand) >= min_val
+    def test_truncated_normal(self):
+        mean = 0.
+        std = 1.
+        min_val = -2.
+        max_val = 2.
+        rand = K.eval(K.truncated_normal((300, 200),
+                                         mean=mean, stddev=std, seed=1337))
+        assert rand.shape == (300, 200)
+        assert np.abs(np.mean(rand) - mean) < 0.015
+        assert np.max(rand) <= max_val
+        assert np.min(rand) >= min_val
 
-    #    # assumption in initializers.VarianceScaling
-    #    assert np.abs(np.std(rand) - std * 0.87962) < 0.015
+        # assumption in initializers.VarianceScaling
+        assert np.abs(np.std(rand) - std * 0.87962) < 0.015
 
     #def test_conv_invalid_use(self):
     #    dummy_x_1d = K.variable(np.ones((4, 8, 2)))
