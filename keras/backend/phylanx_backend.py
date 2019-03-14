@@ -606,7 +606,6 @@ def temporal_padding(x, padding=(1, 1)):
 @Phylanx
 def one_hot_eager(indices, num_classes):
 	return one_hot(indices, num_classes)
-
 def one_hot(indices, num_classes):
 	return one_hot_eager.lazy(indices, num_classes)
 
