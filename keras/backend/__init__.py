@@ -1,7 +1,7 @@
 from .load_backend import epsilon
-#from .load_backend import set_epsilon
+from .load_backend import set_epsilon
 from .load_backend import floatx
-#from .load_backend import set_floatx
+from .load_backend import set_floatx
 #from .load_backend import cast_to_floatx
 #from .load_backend import image_data_format
 #from .load_backend import set_image_data_format
@@ -30,7 +30,7 @@ from .load_backend import ones_like
 #from .load_backend import identity
 from .load_backend import random_uniform_variable
 from .load_backend import random_normal_variable
-#from .load_backend import count_params
+from .load_backend import count_params
 #from .load_backend import cast
 #from .load_backend import update
 #from .load_backend import update_add
@@ -92,7 +92,7 @@ from .load_backend import temporal_padding
 #from .load_backend import spatial_2d_padding
 #from .load_backend import spatial_3d_padding
 #from .load_backend import stack
-#from .load_backend import one_hot
+from .load_backend import one_hot
 from .load_backend import reverse
 #from .load_backend import slice
 from .load_backend import get_value
