@@ -5,7 +5,7 @@ from __future__ import print_function
 
 import numpy as np
 from phylanx import Phylanx, PhylanxSession, execution_tree
-from .common import floatx
+from .common import floatx, set_floatx
 from .common import epsilon, set_epsilon
 from .common import normalize_data_format
 
@@ -204,8 +204,8 @@ def tile_eager(x, n):
 def tile(x, n):
 	return tile_eager.lazy(x, n)
 
-#///
-# nil/None problem, axis problem
+
+# float.shape problem
 @Phylanx
 def max_eager(x, axis, keepdims):
 	return np.amax(x, axis, keepdims)
@@ -246,7 +246,6 @@ def std(x, axis=None, keepdims=False):
 	return std_eager.lazy(x, axis, keepdims)
 
 
-#none axis problem again
 @Phylanx
 def logsumexp_eager(x, axis, keepdims):
 	return logsumexp(x, axis, keepdims)
@@ -277,7 +276,6 @@ def all_eager(x, axis, keepdims):
 
 def all(x, axis=None, keepdims=False):
 	return all_eager.lazy(x, axis, keepdims)
-#///
 
 
 @Phylanx
@@ -320,6 +318,7 @@ def abs(x):
 
 #def sqrt(x):
 #	return sqrt_eager.lazy(x)
+
 
 @Phylanx
 def exp_eager(x):
@@ -465,7 +464,14 @@ def log_eager(x):
 def log(x):
 	return log_eager.lazy(x)
 
-#relu
+
+#@Phylanx
+#def relu_eager(x, alpha, max_value, threshold):
+#	return relu(x, alpha, max_value, threshold)
+
+#def relu(x, alpha=0.0, max_value=None, threshold=0.0):
+#	return relu_eager.lazy(x, alpha, max_value, threshold)
+
 
 @Phylanx
 def softsign_eager(x):
@@ -477,7 +483,7 @@ def softsign(x):
 
 @Phylanx
 def softplus_eager(x):
-	return np.log(1. + np.exp(x))
+	return softplus(x)
 
 def softplus(x):
 	return softplus_eager.lazy(x)
@@ -597,12 +603,12 @@ def temporal_padding(x, padding=(1, 1)):
 	return temporal_padding_eager.lazy(x, padding)
 
 
-#@Phylanx
-#def one_hot_eager(indices, num_classes):
-#	return to_categorical(indices, num_classes)
+@Phylanx
+def one_hot_eager(indices, num_classes):
+	return one_hot(indices, num_classes)
 
-#def one_hot(indices, num_classes):
-#	return one_hot_eager.lazy(indices, num_classes)
+def one_hot(indices, num_classes):
+	return one_hot_eager.lazy(indices, num_classes)
 
 
 # tested in map_fn and gradient
@@ -642,9 +648,16 @@ def constant(value, dtype=None, shape=None, name=None):
 
 #returns a list and asserted with a tuple
 @Phylanx
-def int_shape(x):
+def _int_shape(x):
 	return np.shape(x)
 
+def int_shape(x):
+	return tuple(_int_shape(x))
 
 def get_value(x):
 	return eval(x)
+
+
+@Phylanx
+def count_params(x):
+	return np.size(x)
