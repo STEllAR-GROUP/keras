@@ -278,26 +278,26 @@ class TestBackend(object):
         check_two_tensor_operation('dot', (4, 2), (2, 4), WITH_NP)
         check_two_tensor_operation('dot', (4, 2), (5, 2, 3), WITH_NP)
 
-    #    check_two_tensor_operation('batch_dot', (4, 2, 3), (4, 5, 3),
-    #                               WITH_NP, cntk_two_dynamicity=True, axes=(2, 2))
-    #    check_two_tensor_operation('batch_dot', (4, 2, 3), (4, 3),
-    #                               WITH_NP, cntk_two_dynamicity=True, axes=(2, 1))
-    #    check_two_tensor_operation('batch_dot', (4, 2), (4, 2, 3),
-    #                               WITH_NP, cntk_two_dynamicity=True, axes=(1, 1))
-    #    check_two_tensor_operation('batch_dot', (32, 20), (32, 20),
-    #                               WITH_NP, cntk_two_dynamicity=True, axes=1)
-    #    check_two_tensor_operation('batch_dot', (32, 20), (32, 20),
-    #                               WITH_NP, cntk_two_dynamicity=True, axes=(1, 1))
-    #    check_two_tensor_operation('batch_dot', (4, 2, 3), (4, 5, 3),
-    #                               WITH_NP, axes=(2, 2))
-    #    check_two_tensor_operation('batch_dot', (4, 2, 3), (4, 3),
-    #                               WITH_NP, axes=(2, 1))
-    #    check_two_tensor_operation('batch_dot', (4, 2), (4, 2, 3),
-    #                               WITH_NP, axes=(1, 1))
-    #    check_two_tensor_operation('batch_dot', (32, 20), (32, 20),
-    #                               WITH_NP, axes=1)
-    #    check_two_tensor_operation('batch_dot', (32, 20), (32, 20),
-    #                               WITH_NP, axes=(1, 1))
+        check_two_tensor_operation('batch_dot', (4, 2, 3), (4, 5, 3),
+                                   WITH_NP, cntk_two_dynamicity=True, axes=(2, 2))
+        check_two_tensor_operation('batch_dot', (4, 2, 3), (4, 3),
+                                   WITH_NP, cntk_two_dynamicity=True, axes=(2, 1))
+        check_two_tensor_operation('batch_dot', (4, 2), (4, 2, 3),
+                                   WITH_NP, cntk_two_dynamicity=True, axes=(1, 1))
+        check_two_tensor_operation('batch_dot', (32, 20), (32, 20),
+                                   WITH_NP, cntk_two_dynamicity=True, axes=1)
+        check_two_tensor_operation('batch_dot', (32, 20), (32, 20),
+                                   WITH_NP, cntk_two_dynamicity=True, axes=(1, 1))
+        check_two_tensor_operation('batch_dot', (4, 2, 3), (4, 5, 3),
+                                   WITH_NP, axes=(2, 2))
+        check_two_tensor_operation('batch_dot', (4, 2, 3), (4, 3),
+                                   WITH_NP, axes=(2, 1))
+        check_two_tensor_operation('batch_dot', (4, 2), (4, 2, 3),
+                                   WITH_NP, axes=(1, 1))
+        check_two_tensor_operation('batch_dot', (32, 20), (32, 20),
+                                   WITH_NP, axes=1)
+        check_two_tensor_operation('batch_dot', (32, 20), (32, 20),
+                                   WITH_NP, axes=(1, 1))
 
         check_single_tensor_operation('transpose', (4, 2), WITH_NP)
         check_single_tensor_operation('reverse', (4, 3, 2), WITH_NP, axes=1)
@@ -1110,7 +1110,7 @@ class TestBackend(object):
         check_single_tensor_operation('elu', (4, 10), WITH_NP, alpha=0.5)
 
         check_single_tensor_operation('sigmoid', (4, 2), WITH_NP)
-        check_single_tensor_operation('hard_sigmoid', (4, 2), WITH_NP)
+        #check_single_tensor_operation('hard_sigmoid', (4, 2), WITH_NP)
         check_single_tensor_operation('tanh', (4, 2), WITH_NP)
 
         check_single_tensor_operation('softmax', (4, 10), WITH_NP)
@@ -1141,6 +1141,7 @@ class TestBackend(object):
     #                               WITH_NP, cntk_two_dynamicity=True,
     #                               from_logits=True)
     #
+
     #def test_in_top_k(self):
     #    batch_size = 20
     #    num_classes = 10
@@ -1163,7 +1164,7 @@ class TestBackend(object):
     #    for i in range(batch_size):
     #        idx_identical = np.random.choice(num_classes,
     #                                         size=num_identical, replace=False)
-    #        predictions[i, idx_identical] = predictions[i, 0]
+    #        predictions[i, idx_identical] = predictions[i, 0]S
     #    targets = np.zeros(batch_size, dtype='int32')
     #
     #    for k in range(1, 2 if K.backend() == 'cntk' else (num_classes + 1)):

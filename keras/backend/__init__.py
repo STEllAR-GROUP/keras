@@ -7,8 +7,8 @@ from .load_backend import set_floatx
 #from .load_backend import set_image_data_format
 #from .load_backend import reset_uids
 #from .load_backend import get_uid
-#from .load_backend import learning_phase
-#from .load_backend import set_learning_phase
+from .load_backend import learning_phase
+from .load_backend import set_learning_phase
 #from .load_backend import is_sparse
 #from .load_backend import to_dense
 from .load_backend import variable
@@ -37,7 +37,7 @@ from .load_backend import count_params
 #from .load_backend import update_sub
 #from .load_backend import moving_average_update
 from .load_backend import dot
-#from .load_backend import batch_dot
+from .load_backend import batch_dot
 from .load_backend import transpose
 #from .load_backend import gather
 from .load_backend import max

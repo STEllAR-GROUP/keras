@@ -22,6 +22,16 @@ def variable(value, dtype=None, name=None, constraint=None):
 def eval(x):
 	return x.eval()
 
+_LEARNING_PHASE = True
+
+def learning_phase():
+	return _LEARNING_PHASE
+
+
+def set_learning_phase(value):
+	global _LEARNING_PHASE
+	_LEARNING_PHASE = value
+
 
 # not tested in the backend, should work on both variables and placeholders
 @Phylanx
@@ -86,7 +96,12 @@ def dot(x, y):
 	return dot_eager.lazy(x, y)
 
 
+@Phylanx
+def batch_dot_eager(x, y, axes):
+	return batch_dot(x, y, axes)
 
+def batch_dot(x, y, axes=None):
+	return batch_dot_eager.lazy(x, y, axes)
 
 
 @Phylanx
@@ -164,7 +179,7 @@ def flatten(x):
 
 @Phylanx
 def batch_flatten_eager(x):
-	return np.reshape(x, list(shape(x)[0], -1))
+	return np.reshape(x, [shape(x)[0], -1])
 
 def batch_flatten(x):
 	return batch_flatten_eager.lazy(x)
@@ -499,7 +514,7 @@ def elu(x, alpha=1.):
 
 @Phylanx
 def sigmoid_eager(x):
-	return 1. / (1. + np.exp(-x))
+	return sigmoid(x)
 
 def sigmoid(x):
 	return sigmoid_eager.lazy(x)
@@ -507,8 +522,7 @@ def sigmoid(x):
 
 @Phylanx
 def hard_sigmoid_eager(x):
-	y = 0.2 * x + 0.5
-	return np.clip(y, 0, 1)
+	return hard_sigmoid(x)
 
 def hard_sigmoid(x):
 	return hard_sigmoid_eager.lazy(x)
@@ -529,6 +543,14 @@ def softmax_eager(x, axis):
 
 def softmax(x, axis=-1):
 	return softmax_eager.lazy(x, axis)
+
+
+#@Phylanx
+#def l2_normalize_eager(x, axis):
+#	return l2_normalize(x, axis)
+
+#def l2_normalize(x, axis=None):
+#	return l2_normalize_eager.lazy(x, axis)
 
 
 @Phylanx
