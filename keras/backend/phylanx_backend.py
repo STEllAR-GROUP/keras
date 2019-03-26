@@ -480,6 +480,28 @@ def log(x):
 	return log_eager.lazy(x)
 
 
+@Phylanx
+def _dropout(x, level, noise_shape, seed):
+	if seed:
+		set_seed(seed)
+	noise = random(noise_shape if noise_shape else shape(x), ["bernoulli", 1 - level])
+	return x * noise / (1 - level)
+
+@Phylanx
+def _no_dropout(x):
+	return x
+
+def dropout_eager(x, level, noise_shape, seed):
+	if learning_phase():
+		return _dropout.lazy(x, level, noise_shape, seed)
+
+	# dropout is not considered outside the learning phase
+	return _no_dropout.lazy(x)
+
+def dropout(x, level, noise_shape=None, seed=None):
+	return dropout_eager(x, level, noise_shape, seed)
+
+
 #@Phylanx
 #def relu_eager(x, alpha, max_value, threshold):
 #	return relu(x, alpha, max_value, threshold)
@@ -506,7 +528,7 @@ def softplus(x):
 
 @Phylanx
 def elu_eager(x, alpha):
-	return x * (x > 0) + alpha * (np.exp(x) - 1.) * (x < 0)
+	return elu(x, alpha)
 
 def elu(x, alpha=1.):
 	return elu_eager.lazy(x, alpha)
@@ -625,13 +647,11 @@ def temporal_padding(x, padding=(1, 1)):
 	return temporal_padding_eager.lazy(x, padding)
 
 
-@Phylanx
-def one_hot_eager(indices, num_classes):
-	return one_hot(indices, num_classes)
-def one_hot(indices, num_classes):
-	return one_hot_eager.lazy(indices, num_classes)
-
-
+#@Phylanx
+#def one_hot_eager(indices, num_classes):
+#	return one_hot(indices, num_classes)
+#def one_hot(indices, num_classes):
+#	return one_hot_eager.lazy(indices, num_classes)
 # tested in map_fn and gradient
 @Phylanx
 def sum_eager(x, axis, keepdims):
@@ -641,13 +661,13 @@ def sum(x, axis=None, keepdims=False):
 	return sum_eager.lazy(x, axis, keepdims)
 
 
-# concat_args true
-#@Phylanx
-#def stack_eager(x, axis):
-#    return np.stack(x, axis=axis)
+# 4d, 5d
+@Phylanx
+def stack_eager(x, axis):
+	return np.stack(x, axis=axis)
 
-#def stack(x, axis=0):
-#    return stack_eager.lazy(x, axis)
+def stack(x, axis=0):
+	return stack_eager.lazy(x, axis)
 
 
 @Phylanx
@@ -675,6 +695,9 @@ def _int_shape(x):
 def int_shape(x):
 	return tuple(_int_shape(x))
 
+def get_variable_shape(x):
+	return int_shape(x)
+
 def get_value(x):
 	return eval(x)
 
@@ -682,3 +705,7 @@ def get_value(x):
 @Phylanx
 def count_params(x):
 	return np.size(x)
+
+
+def dtype(x):
+	return execution_tree.var(x).dtype

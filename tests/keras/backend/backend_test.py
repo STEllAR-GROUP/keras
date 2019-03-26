@@ -467,18 +467,18 @@ class TestBackend(object):
     #        y = K.gather(x, indices)
     #        assert y._keras_shape == (5, 6, 3, 4)
 
-    #@pytest.mark.parametrize('function_name',
-    #                         ['get_value', 'count_params',
-    #                          'int_shape', 'get_variable_shape'])
-    #def test_value_manipulation(self, function_name):
-    #    val = np.random.random((4, 2))
-    #    v_list = [getattr(k, function_name)(k.variable(val))
-    #              for k in WITH_NP]
+    @pytest.mark.parametrize('function_name',
+                             ['get_value', 'count_params',
+                              'int_shape', 'get_variable_shape'])
+    def test_value_manipulation(self, function_name):
+        val = np.random.random((4, 2))
+        v_list = [getattr(k, function_name)(k.variable(val))
+                  for k in WITH_NP]
 
-    #    if function_name == 'get_value':
-    #        assert_list_pairwise(v_list)
-    #    else:
-    #        assert_list_pairwise(v_list, shape=False, allclose=False, itself=True)
+        if function_name == 'get_value':
+            assert_list_pairwise(v_list)
+        else:
+            assert_list_pairwise(v_list, shape=False, allclose=False, itself=True)
 
     #def test_print_tensor(self):
     #    check_single_tensor_operation('print_tensor', (), WITH_NP)
@@ -487,38 +487,37 @@ class TestBackend(object):
     #    check_single_tensor_operation('print_tensor', (1, 2, 3), WITH_NP)
 
     def test_elementwise_operations(self):
-        #check_single_tensor_operation('max', (4, 2), WITH_NP)
+        check_single_tensor_operation('max', (4, 2), WITH_NP)
         check_single_tensor_operation('max', (4, 2), WITH_NP, axis=1, keepdims=True)
         check_single_tensor_operation('max', (4, 2, 3), WITH_NP, axis=[1, -1])
 
-    #    check_single_tensor_operation('min', (4, 2), WITH_NP)
+        check_single_tensor_operation('min', (4, 2), WITH_NP)
         check_single_tensor_operation('min', (4, 2), WITH_NP, axis=1, keepdims=True)
         check_single_tensor_operation('min', (4, 2, 3), WITH_NP, axis=[1, -1])
 
-    #    check_single_tensor_operation('mean', (4, 2), WITH_NP)
+        check_single_tensor_operation('mean', (4, 2), WITH_NP)
         check_single_tensor_operation('mean', (4, 2), WITH_NP, axis=1, keepdims=True)
         check_single_tensor_operation('mean', (4, 2, 3),
                                       WITH_NP, axis=-1, keepdims=True)
         check_single_tensor_operation('mean', (4, 2, 3), WITH_NP, axis=[1, -1])
 
-    #    check_single_tensor_operation('var', (4, 2), WITH_NP)
+        check_single_tensor_operation('var', (4, 2), WITH_NP)
         check_single_tensor_operation('var', (4, 2), WITH_NP, axis=1, keepdims=True)
         check_single_tensor_operation('var', (4, 2, 3), WITH_NP, axis=[1, -1])
 
-    #    check_single_tensor_operation('std', (4, 2), WITH_NP)
+        check_single_tensor_operation('std', (4, 2), WITH_NP)
         check_single_tensor_operation('std', (4, 2), WITH_NP, axis=1, keepdims=True)
         check_single_tensor_operation('std', (4, 2, 3), WITH_NP, axis=[1, -1])
 
-        check_single_tensor_operation('prod', (4, 2), WITH_NP)
 
-        check_single_tensor_operation('prod', (4, 2), WITH_NP, axis=1, keepdims=True)
+        check_single_tensor_operation('prod', (4, 2), WITH_NP)        check_single_tensor_operation('prod', (4, 2), WITH_NP, axis=1, keepdims=True)
         check_single_tensor_operation('prod', (4, 2, 3), WITH_NP, axis=[1, -1])
 
-    #    check_single_tensor_operation('any', (4, 2), WITH_NP)
+        check_single_tensor_operation('any', (4, 2), WITH_NP)
         check_single_tensor_operation('any', (4, 2), WITH_NP, axis=1, keepdims=True)
         check_single_tensor_operation('any', (4, 2, 3), WITH_NP, axis=[1, -1])
 
-    #    check_single_tensor_operation('all', (4, 2), WITH_NP)
+        check_single_tensor_operation('all', (4, 2), WITH_NP)
         check_single_tensor_operation('all', (4, 2), WITH_NP, axis=1, keepdims=True)
         check_single_tensor_operation('all', (4, 2, 3), WITH_NP, axis=[1, -1])
 
@@ -1032,7 +1031,6 @@ class TestBackend(object):
             check_single_tensor_operation('logsumexp', shape, WITH_NP, axis=[1, -1])
             check_single_tensor_operation('logsumexp', shape, WITH_NP, axis=[1, -1],
                                           keepdims=True)
-
     #@pytest.mark.skipif(K.backend() != 'tensorflow',
     #                    reason='The optimization is applied only with TensorFlow.')
     #def test_logsumexp_optim(self):
@@ -1110,7 +1108,7 @@ class TestBackend(object):
         check_single_tensor_operation('elu', (4, 10), WITH_NP, alpha=0.5)
 
         check_single_tensor_operation('sigmoid', (4, 2), WITH_NP)
-        #check_single_tensor_operation('hard_sigmoid', (4, 2), WITH_NP)
+        check_single_tensor_operation('hard_sigmoid', (4, 2), WITH_NP)
         check_single_tensor_operation('tanh', (4, 2), WITH_NP)
 
         check_single_tensor_operation('softmax', (4, 10), WITH_NP)
@@ -2036,30 +2034,30 @@ class TestBackend(object):
     #    check_two_tensor_operation('in_test_phase', (2, 3), (2, 3), WITH_NP,
     #                               training=training)
     #
-    #def test_setfloatx_incorrect_values(self):
-    #    # Keep track of the old value
-    #    old_floatx = floatx()
-    #    # Try some incorrect values
-    #    initial = floatx()
-    #    for value in ['', 'beerfloat', 123]:
-    #        with pytest.raises(ValueError):
-    #            set_floatx(value)
-    #    assert floatx() == initial
-    #    # Restore old value
-    #    set_floatx(old_floatx)
+    def test_setfloatx_incorrect_values(self):
+        # Keep track of the old value
+        old_floatx = floatx()
+        # Try some incorrect values
+        initial = floatx()
+        for value in ['', 'beerfloat', 123]:
+            with pytest.raises(ValueError):
+                set_floatx(value)
+        assert floatx() == initial
+        # Restore old value
+        set_floatx(old_floatx)
     #
-    #def test_setfloatx_correct_values(self):
-    #    # Keep track of the old value
-    #    old_floatx = floatx()
-    #    # Check correct values
-    #    for value in ['float16', 'float32', 'float64']:
-    #        set_floatx(value)
-    #        assert floatx() == value
-    #    # Restore old value
-    #    set_floatx(old_floatx)
+    def test_setfloatx_correct_values(self):
+        # Keep track of the old value
+        old_floatx = floatx()
+        # Check correct values
+        for value in ['float16', 'float32', 'float64']:
+            set_floatx(value)
+            assert floatx() == value
+        # Restore old value
+        set_floatx(old_floatx)
     #
-    #@pytest.mark.skipif((K.backend() == 'cntk'),
-    #                    reason='cntk does not support float16')
+    @pytest.mark.skipif((K.backend() == 'cntk'),
+                        reason='cntk does not support float16')
     #def test_set_floatx(self):
     #    """
     #    Make sure that changes to the global floatx are effectively
@@ -2102,17 +2100,15 @@ class TestBackend(object):
     #    min_val_k = K.variable(min_val)
     #    max_val_k = K.variable(max_val)
     #    assert np.allclose(K.eval(K.clip(x_k, min_val_k, max_val_k)),
-    #                       KNP.eval(KNP.clip(x, min_val, max_val)))
-    #
-    #@pytest.mark.skipif(K.backend() != 'tensorflow',
-    #                    reason='This test is for tensorflow parallelism.')
-    #def test_tensorflow_session_parallelism_settings(self, monkeypatch):
-    #    for threads in [0, 1, 4]:
-    #        K.clear_session()
-    #        monkeypatch.setenv('OMP_NUM_THREADS', str(threads))
-    #        cfg = K.get_session()._config
-    #        assert cfg.intra_op_parallelism_threads == threads
-    #        assert cfg.inter_op_parallelism_threads == threads
+    #                       KNP.eval(KNP.clip(x, min_val, max_val)))    @pytest.mark.skipif(K.backend() != 'tensorflow',
+                        reason='This test is for tensorflow parallelism.')
+    def test_tensorflow_session_parallelism_settings(self, monkeypatch):
+        for threads in [0, 1, 4]:
+            K.clear_session()
+            monkeypatch.setenv('OMP_NUM_THREADS', str(threads))
+            cfg = K.get_session()._config
+            assert cfg.intra_op_parallelism_threads == threads
+            assert cfg.inter_op_parallelism_threads == threads
 
 if __name__ == '__main__':
     pytest.main([__file__])

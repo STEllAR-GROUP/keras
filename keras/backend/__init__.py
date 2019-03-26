@@ -20,7 +20,7 @@ from .load_backend import constant
 #from .load_backend import shape
 from .load_backend import int_shape
 from .load_backend import ndim
-#from .load_backend import dtype
+from .load_backend import dtype
 from .load_backend import eval
 from .load_backend import zeros
 from .load_backend import ones
@@ -91,9 +91,8 @@ from .load_backend import squeeze
 from .load_backend import temporal_padding
 #from .load_backend import spatial_2d_padding
 #from .load_backend import spatial_3d_padding
-#from .load_backend import stack
-from .load_backend import one_hot
-from .load_backend import reverse
+from .load_backend import stack
+from .load_backend import one_hotfrom .load_backend import reverse
 #from .load_backend import slice
 from .load_backend import get_value
 #from .load_backend import batch_get_value
@@ -118,7 +117,7 @@ from .load_backend import softsign
 from .load_backend import sigmoid
 from .load_backend import hard_sigmoid
 from .load_backend import tanh
-#from .load_backend import dropout
+from .load_backend import dropout
 #from .load_backend import l2_normalize
 #from .load_backend import in_top_k
 #from .load_backend import conv1d
