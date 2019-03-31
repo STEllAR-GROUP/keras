@@ -1,0 +1,50 @@
+F tests/keras/backend/backend_test.py::TestBackend::test_resize_images_bilinear[channels_first]
+ self = <backend_test.TestBackend object at 0x000002B593491F28>, data_format = 'channels_first'
+ 
+     @pytest.mark.skipif(K.backend() == 'cntk', reason='Not supported.')
+     @pytest.mark.parametrize('data_format', ['channels_first', 'channels_last'])
+     def test_resize_images_bilinear(self, data_format):
+ >       self._helper_bilinear(data_format, 2, 2)
+ 
+ tests\keras\backend\backend_test.py:1509: 
+ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ tests\keras\backend\backend_test.py:1504: in _helper_bilinear
+     interpolation='bilinear')
+ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ 
+ function_name = 'resize_images', x_shape_or_val = (2, 3, 4, 5), backend_list = [<module 'keras.backend.tensorflow_backend' from 'c:\\repos\\keras\\keras\\backend\\tensorflow_backend.py'>, None]
+ kwargs = {'data_format': 'channels_first', 'height_factor': 2, 'interpolation': 'bilinear', 'width_factor': 2}, shape_or_val = True, assert_value_equality = True, cntk_dynamicity = False, x_shape = (2, 3, 4, 5)
+ x_val = array([[[[-0.33074218, -0.2254313 , -0.26495457, -0.37399808,
+           -0.17849389],
+          [ 0.27957726,  0.042771...   0.28318703],
+          [-0.247251  ,  0.26846582,  0.40695894, -0.34706587,
+            0.23792046]]]], dtype=float32)
+ t_list = [<tf.Tensor 'transpose_1:0' shape=(2, 3, 8, 10) dtype=float32>]
+ z_list = [array([[[[-3.30742180e-01, -2.78086722e-01, -2.25431293e-01,
+           -2.45192930e-01, -2.64954567e-01, -3.19476306e...465358e-02,
+           -3.47065866e-01, -5.45727015e-02,  2.37920463e-01,
+            2.37920463e-01]]]], dtype=float32)]
+ 
+     def check_single_tensor_operation(function_name,
+                                       x_shape_or_val,
+                                       backend_list,
+                                       **kwargs):
+         shape_or_val = kwargs.pop('shape_or_val', True)
+         assert_value_equality = kwargs.pop('assert_value_equality', True)
+         cntk_dynamicity = kwargs.pop('cntk_dynamicity', False)
+     
+         if shape_or_val:
+             x_shape, x_val = parse_shape_or_val(x_shape_or_val)
+     
+         t_list = []
+         z_list = []
+         for k in backend_list:
+             if shape_or_val:
+                 if (k == KC) & (cntk_dynamicity):
+                     t, f = cntk_func_tensors(function_name, [x_shape], **kwargs)
+                     z = f([x_val])[0]
+                 else:
+ >                   t = getattr(k, function_name)(k.variable(x_val), **kwargs)
+ E                   AttributeError: 'NoneType' object has no attribute 'resize_images'
+ 
+ tests\keras\backend\backend_test.py:117: AttributeError

@@ -1,0 +1,267 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1ed19c69-1530-4553-b2a4-6a16ae92f98f}</ProjectGuid>
+    <ProjectHome />
+    <StartupFile>setup.py</StartupFile>
+    <SearchPath />
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterId />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="docs\theme\404.html" />
+    <Content Include="docs\theme\base.html" />
+    <Content Include="docs\theme\breadcrumbs.html" />
+    <Content Include="docs\theme\css\theme.css" />
+    <Content Include="docs\theme\css\theme_extra.css" />
+    <Content Include="docs\theme\footer.html" />
+    <Content Include="docs\theme\js\jquery-2.1.1.min.js" />
+    <Content Include="docs\theme\js\modernizr-2.8.3.min.js" />
+    <Content Include="docs\theme\js\theme.js" />
+    <Content Include="docs\theme\main.html" />
+    <Content Include="docs\theme\nav.html" />
+    <Content Include="docs\theme\search.html" />
+    <Content Include="docs\theme\searchbox.html" />
+    <Content Include="docs\theme\toc.html" />
+    <Content Include="docs\theme\versions.html" />
+    <Content Include="Keras.egg-info\dependency_links.txt" />
+    <Content Include="Keras.egg-info\requires.txt" />
+    <Content Include="Keras.egg-info\SOURCES.txt" />
+    <Content Include="Keras.egg-info\top_level.txt" />
+    <Content Include="pytest.ini" />
+    <Content Include="test_result.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="docs\autogen.py" />
+    <Compile Include="docs\structure.py" />
+    <Compile Include="docs\__init__.py" />
+    <Compile Include="examples\addition_rnn.py" />
+    <Compile Include="examples\antirectifier.py" />
+    <Compile Include="examples\babi_memnn.py" />
+    <Compile Include="examples\babi_rnn.py" />
+    <Compile Include="examples\cifar10_cnn.py" />
+    <Compile Include="examples\cifar10_cnn_capsule.py" />
+    <Compile Include="examples\cifar10_cnn_tfaugment2d.py" />
+    <Compile Include="examples\cifar10_resnet.py" />
+    <Compile Include="examples\class_activation_maps.py" />
+    <Compile Include="examples\conv_filter_visualization.py" />
+    <Compile Include="examples\conv_lstm.py" />
+    <Compile Include="examples\deep_dream.py" />
+    <Compile Include="examples\image_ocr.py" />
+    <Compile Include="examples\imdb_bidirectional_lstm.py" />
+    <Compile Include="examples\imdb_cnn.py" />
+    <Compile Include="examples\imdb_cnn_lstm.py" />
+    <Compile Include="examples\imdb_fasttext.py" />
+    <Compile Include="examples\imdb_lstm.py" />
+    <Compile Include="examples\lstm_seq2seq.py" />
+    <Compile Include="examples\lstm_seq2seq_restore.py" />
+    <Compile Include="examples\lstm_stateful.py" />
+    <Compile Include="examples\lstm_text_generation.py" />
+    <Compile Include="examples\mnist_acgan.py" />
+    <Compile Include="examples\mnist_cnn.py" />
+    <Compile Include="examples\mnist_dataset_api.py" />
+    <Compile Include="examples\mnist_denoising_autoencoder.py" />
+    <Compile Include="examples\mnist_hierarchical_rnn.py" />
+    <Compile Include="examples\mnist_irnn.py" />
+    <Compile Include="examples\mnist_mlp.py" />
+    <Compile Include="examples\mnist_net2net.py" />
+    <Compile Include="examples\mnist_siamese.py" />
+    <Compile Include="examples\mnist_sklearn_wrapper.py" />
+    <Compile Include="examples\mnist_swwae.py" />
+    <Compile Include="examples\mnist_tfrecord.py" />
+    <Compile Include="examples\mnist_transfer_cnn.py" />
+    <Compile Include="examples\neural_doodle.py" />
+    <Compile Include="examples\neural_style_transfer.py" />
+    <Compile Include="examples\pretrained_word_embeddings.py" />
+    <Compile Include="examples\reuters_mlp.py" />
+    <Compile Include="examples\reuters_mlp_relu_vs_selu.py" />
+    <Compile Include="examples\tensorboard_embeddings_mnist.py" />
+    <Compile Include="examples\variational_autoencoder.py" />
+    <Compile Include="examples\variational_autoencoder_deconv.py" />
+    <Compile Include="keras\activations.py" />
+    <Compile Include="keras\applications\densenet.py" />
+    <Compile Include="keras\applications\imagenet_utils.py" />
+    <Compile Include="keras\applications\inception_resnet_v2.py" />
+    <Compile Include="keras\applications\inception_v3.py" />
+    <Compile Include="keras\applications\mobilenet.py" />
+    <Compile Include="keras\applications\mobilenetv2.py" />
+    <Compile Include="keras\applications\mobilenet_v2.py" />
+    <Compile Include="keras\applications\nasnet.py" />
+    <Compile Include="keras\applications\resnet.py" />
+    <Compile Include="keras\applications\resnet50.py" />
+    <Compile Include="keras\applications\resnet_v2.py" />
+    <Compile Include="keras\applications\resnext.py" />
+    <Compile Include="keras\applications\vgg16.py" />
+    <Compile Include="keras\applications\vgg19.py" />
+    <Compile Include="keras\applications\xception.py" />
+    <Compile Include="keras\applications\__init__.py" />
+    <Compile Include="keras\backend\cntk_backend.py" />
+    <Compile Include="keras\backend\common.py" />
+    <Compile Include="keras\backend\load_backend.py" />
+    <Compile Include="keras\backend\numpy_backend.py" />
+    <Compile Include="keras\backend\phylanx_backend.py" />
+    <Compile Include="keras\backend\tensorflow_backend.py" />
+    <Compile Include="keras\backend\theano_backend.py" />
+    <Compile Include="keras\backend\__init__.py" />
+    <Compile Include="keras\callbacks.py" />
+    <Compile Include="keras\constraints.py" />
+    <Compile Include="keras\datasets\boston_housing.py" />
+    <Compile Include="keras\datasets\cifar.py" />
+    <Compile Include="keras\datasets\cifar10.py" />
+    <Compile Include="keras\datasets\cifar100.py" />
+    <Compile Include="keras\datasets\fashion_mnist.py" />
+    <Compile Include="keras\datasets\imdb.py" />
+    <Compile Include="keras\datasets\mnist.py" />
+    <Compile Include="keras\datasets\reuters.py" />
+    <Compile Include="keras\datasets\__init__.py" />
+    <Compile Include="keras\engine\base_layer.py" />
+    <Compile Include="keras\engine\input_layer.py" />
+    <Compile Include="keras\engine\network.py" />
+    <Compile Include="keras\engine\saving.py" />
+    <Compile Include="keras\engine\sequential.py" />
+    <Compile Include="keras\engine\topology.py" />
+    <Compile Include="keras\engine\training.py" />
+    <Compile Include="keras\engine\training_arrays.py" />
+    <Compile Include="keras\engine\training_generator.py" />
+    <Compile Include="keras\engine\training_utils.py" />
+    <Compile Include="keras\engine\__init__.py" />
+    <Compile Include="keras\initializers.py" />
+    <Compile Include="keras\layers\advanced_activations.py" />
+    <Compile Include="keras\layers\convolutional.py" />
+    <Compile Include="keras\layers\convolutional_recurrent.py" />
+    <Compile Include="keras\layers\core.py" />
+    <Compile Include="keras\layers\cudnn_recurrent.py" />
+    <Compile Include="keras\layers\embeddings.py" />
+    <Compile Include="keras\layers\local.py" />
+    <Compile Include="keras\layers\merge.py" />
+    <Compile Include="keras\layers\noise.py" />
+    <Compile Include="keras\layers\normalization.py" />
+    <Compile Include="keras\layers\pooling.py" />
+    <Compile Include="keras\layers\recurrent.py" />
+    <Compile Include="keras\layers\wrappers.py" />
+    <Compile Include="keras\layers\__init__.py" />
+    <Compile Include="keras\legacy\interfaces.py" />
+    <Compile Include="keras\legacy\layers.py" />
+    <Compile Include="keras\legacy\__init__.py" />
+    <Compile Include="keras\losses.py" />
+    <Compile Include="keras\metrics.py" />
+    <Compile Include="keras\models.py" />
+    <Compile Include="keras\objectives.py" />
+    <Compile Include="keras\optimizers.py" />
+    <Compile Include="keras\preprocessing\image.py" />
+    <Compile Include="keras\preprocessing\sequence.py" />
+    <Compile Include="keras\preprocessing\text.py" />
+    <Compile Include="keras\preprocessing\__init__.py" />
+    <Compile Include="keras\regularizers.py" />
+    <Compile Include="keras\utils\conv_utils.py" />
+    <Compile Include="keras\utils\data_utils.py" />
+    <Compile Include="keras\utils\generic_utils.py" />
+    <Compile Include="keras\utils\io_utils.py" />
+    <Compile Include="keras\utils\layer_utils.py" />
+    <Compile Include="keras\utils\multi_gpu_utils.py" />
+    <Compile Include="keras\utils\np_utils.py" />
+    <Compile Include="keras\utils\test_utils.py" />
+    <Compile Include="keras\utils\vis_utils.py" />
+    <Compile Include="keras\utils\__init__.py" />
+    <Compile Include="keras\wrappers\scikit_learn.py" />
+    <Compile Include="keras\wrappers\__init__.py" />
+    <Compile Include="keras\__init__.py" />
+    <Compile Include="setup.py" />
+    <Compile Include="tests\conftest.py" />
+    <Compile Include="tests\docs\test_documentation.py" />
+    <Compile Include="tests\docs\test_doc_auto_generation.py" />
+    <Compile Include="tests\integration_tests\applications_test.py" />
+    <Compile Include="tests\integration_tests\imagenet_utils_test.py" />
+    <Compile Include="tests\integration_tests\preprocessing\image_test.py" />
+    <Compile Include="tests\integration_tests\preprocessing\sequence_test.py" />
+    <Compile Include="tests\integration_tests\preprocessing\text_test.py" />
+    <Compile Include="tests\integration_tests\test_datasets.py" />
+    <Compile Include="tests\integration_tests\test_image_data_tasks.py" />
+    <Compile Include="tests\integration_tests\test_temporal_data_tasks.py" />
+    <Compile Include="tests\integration_tests\test_tensorflow_integration.py" />
+    <Compile Include="tests\integration_tests\test_vector_data_tasks.py" />
+    <Compile Include="tests\keras\activations_test.py" />
+    <Compile Include="tests\keras\backend\backend_test.py" />
+    <Compile Include="tests\keras\constraints_test.py" />
+    <Compile Include="tests\keras\engine\test_topology.py" />
+    <Compile Include="tests\keras\engine\test_training.py" />
+    <Compile Include="tests\keras\initializers_test.py" />
+    <Compile Include="tests\keras\layers\advanced_activations_test.py" />
+    <Compile Include="tests\keras\layers\convolutional_recurrent_test.py" />
+    <Compile Include="tests\keras\layers\convolutional_test.py" />
+    <Compile Include="tests\keras\layers\core_test.py" />
+    <Compile Include="tests\keras\layers\cudnn_recurrent_test.py" />
+    <Compile Include="tests\keras\layers\embeddings_test.py" />
+    <Compile Include="tests\keras\layers\local_test.py" />
+    <Compile Include="tests\keras\layers\merge_test.py" />
+    <Compile Include="tests\keras\layers\noise_test.py" />
+    <Compile Include="tests\keras\layers\normalization_test.py" />
+    <Compile Include="tests\keras\layers\pooling_test.py" />
+    <Compile Include="tests\keras\layers\recurrent_test.py" />
+    <Compile Include="tests\keras\layers\wrappers_test.py" />
+    <Compile Include="tests\keras\legacy\conftest.py" />
+    <Compile Include="tests\keras\legacy\interface_test.py" />
+    <Compile Include="tests\keras\legacy\layers_test.py" />
+    <Compile Include="tests\keras\losses_test.py" />
+    <Compile Include="tests\keras\metrics_test.py" />
+    <Compile Include="tests\keras\optimizers_test.py" />
+    <Compile Include="tests\keras\regularizers_test.py" />
+    <Compile Include="tests\keras\test_callbacks.py" />
+    <Compile Include="tests\keras\test_sequential_model.py" />
+    <Compile Include="tests\keras\utils\conv_utils_test.py" />
+    <Compile Include="tests\keras\utils\data_utils_test.py" />
+    <Compile Include="tests\keras\utils\generic_utils_test.py" />
+    <Compile Include="tests\keras\utils\io_utils_test.py" />
+    <Compile Include="tests\keras\utils\layer_utils_test.py" />
+    <Compile Include="tests\keras\utils\multi_gpu_test.py" />
+    <Compile Include="tests\keras\utils\np_utils_test.py" />
+    <Compile Include="tests\keras\utils\vis_utils_test.py" />
+    <Compile Include="tests\keras\wrappers\scikit_learn_test.py" />
+    <Compile Include="tests\test_dynamic_trainability.py" />
+    <Compile Include="tests\test_loss_masking.py" />
+    <Compile Include="tests\test_loss_weighting.py" />
+    <Compile Include="tests\test_model_pickling.py" />
+    <Compile Include="tests\test_model_saving.py" />
+    <Compile Include="tests\test_multiprocessing.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="docs" />
+    <Folder Include="docs\theme" />
+    <Folder Include="docs\theme\css" />
+    <Folder Include="docs\theme\js" />
+    <Folder Include="examples" />
+    <Folder Include="keras" />
+    <Folder Include="Keras.egg-info" />
+    <Folder Include="keras\applications" />
+    <Folder Include="keras\backend" />
+    <Folder Include="keras\datasets" />
+    <Folder Include="keras\engine" />
+    <Folder Include="keras\layers" />
+    <Folder Include="keras\legacy" />
+    <Folder Include="keras\preprocessing" />
+    <Folder Include="keras\utils" />
+    <Folder Include="keras\wrappers" />
+    <Folder Include="tests" />
+    <Folder Include="tests\docs" />
+    <Folder Include="tests\integration_tests" />
+    <Folder Include="tests\integration_tests\preprocessing" />
+    <Folder Include="tests\keras" />
+    <Folder Include="tests\keras\backend" />
+    <Folder Include="tests\keras\engine" />
+    <Folder Include="tests\keras\layers" />
+    <Folder Include="tests\keras\legacy" />
+    <Folder Include="tests\keras\utils" />
+    <Folder Include="tests\keras\wrappers" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+</Project>

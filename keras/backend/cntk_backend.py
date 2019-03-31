@@ -523,7 +523,11 @@ def ones(shape, dtype=None, name=None):
 def eye(size, dtype=None, name=None):
     if dtype is None:
         dtype = floatx()
-    return variable(np.eye(size), dtype, name)
+    if isinstance(size, (list, tuple)):
+        n, m = size
+    else:
+        n, m = size, size
+    return variable(np.eye(n, m), dtype, name)
 
 
 def zeros_like(x, dtype=None, name=None):
@@ -843,11 +847,9 @@ def tile(x, n):
 
     shape = int_shape(x)
     num_dynamic_axis = _get_dynamic_axis_num(x)
-    # Padding the axis
-    if len(n) < len(shape):
+    if len(n) < len(shape):  # Padding the axis
         n = tuple([1 for _ in range(len(shape) - len(n))]) + n
-
-    if len(n) != len(shape):
+    elif len(n) != len(shape):
         raise NotImplementedError
 
     i = num_dynamic_axis
@@ -1881,8 +1883,6 @@ def pool2d(x, pool_size, strides=(1, 1),
     data_format = normalize_data_format(data_format)
 
     padding = _preprocess_border_mode(padding)
-    strides = strides
-    pool_size = pool_size
     x = _preprocess_conv2d_input(x, data_format)
     if pool_mode == 'max':
         x = C.pooling(
@@ -2285,22 +2285,15 @@ def one_hot(indices, num_classes):
 def get_value(x):
     if isinstance(
             x,
-            C.variables.Parameter) or isinstance(
-            x,
-            C.variables.Constant):
+            (C.variables.Parameter, C.variables.Constant)):
         return x.value
     else:
         return eval(x)
 
 
 def batch_get_value(xs):
-    result = []
-    for x in xs:
-        if (isinstance(x, C.variables.Parameter) or
-           isinstance(x, C.variables.Constant)):
-            result.append(x.value)
-        else:
-            result.append(eval(x))
+    result = [get_value(x) for x in xs]
+
     return result
 
 
@@ -2370,8 +2363,10 @@ def elu(x, alpha=1.):
 
 def in_top_k(predictions, targets, k):
     _targets = C.one_hot(targets, predictions.shape[-1])
-    result = C.classification_error(predictions, _targets, topN=k)
-    return 1 - C.reshape(result, shape=())
+    result = [C.classification_error(predictions[i], _targets[i], topN=k)
+              for i in range(predictions.shape[0])]
+    result = concatenate(result, axis=-1)
+    return 1 - C.reshape(result, shape=(-1,))
 
 
 def conv2d_transpose(x, kernel, output_shape, strides=(1, 1),
@@ -2584,7 +2579,11 @@ def reverse(x, axes):
 
 
 def slice(x, start, size):
-    raise NotImplementedError
+    if not (len(int_shape(x)) == len(start) == len(size)):
+        raise ValueError('The dimension and the size of indices should match.')
+    out = x[tuple([py_slice(i, i + j) for (i, j) in zip(start, size)])]
+    out._keras_shape = tuple(size)
+    return out
 
 
 def _reshape_batch(x, shape):
@@ -2742,11 +2741,33 @@ def to_dense(tensor):
 
 
 def cumsum(x, axis=0):
-    raise NotImplementedError
+    dim = x.shape[axis]
+    U = C.constant(np.triu(np.ones((dim, dim))).astype(x.dtype))
+    if axis != -1:
+        x = C.swapaxes(x, -1, axis)
+    out = C.times(x, U)
+    if axis != -1:
+        out = C.swapaxes(out, -1, axis)
+    return out
 
 
 def cumprod(x, axis=0):
-    raise NotImplementedError
+    shape = x.shape
+    out = x
+    for rep in range(shape[axis] - 1):
+        sliced_shape = list(shape)
+        sliced_shape[axis] = rep + 1
+        if axis == 0:
+            _x = x[rep:(rep + 1)]
+        elif axis == 1:
+            _x = x[:, rep:(rep + 1)]
+        elif axis == 2:
+            _x = x[:, :, rep:(rep + 1)]
+        y = concatenate([ones(sliced_shape, dtype=x.dtype),
+                         repeat_elements(_x, rep=shape[axis] - 1 - rep, axis=axis)],
+                        axis=axis)
+        out = C.element_times(out, y)
+    return out
 
 
 def arange(start, stop=None, step=1, dtype='int32'):

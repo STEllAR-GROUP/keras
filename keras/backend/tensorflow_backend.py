@@ -761,7 +761,7 @@ def eye(size, dtype=None, name=None):
     """Instantiate an identity matrix and returns it.
 
     # Arguments
-        size: Integer, number of rows/columns.
+        size: Tuple, number of rows and columns. If Integer, number of rows.
         dtype: String, data type of returned Keras variable.
         name: String, name of returned Keras variable.
 
@@ -771,18 +771,24 @@ def eye(size, dtype=None, name=None):
     # Example
     ```python
         >>> from keras import backend as K
-        >>> kvar = K.eye(3)
-        >>> K.eval(kvar)
+        >>> K.eval(K.eye(3))
         array([[ 1.,  0.,  0.],
                [ 0.,  1.,  0.],
                [ 0.,  0.,  1.]], dtype=float32)
+        >>> K.eval(K.eye((2, 3)))
+        array([[1., 0., 0.],
+               [0., 1., 0.]], dtype=float32)
     ```
     {{np_implementation}}
     """
     if dtype is None:
         dtype = floatx()
     tf_dtype = tf.as_dtype(dtype)
-    return variable(tf.eye(size, dtype=tf_dtype), dtype, name)
+    if isinstance(size, (list, tuple)):
+        n, m = size
+    else:
+        n, m = size, size
+    return variable(tf.eye(n, m, dtype=tf_dtype), dtype, name)
 
 
 def zeros_like(x, dtype=None, name=None):
@@ -2385,9 +2391,31 @@ def tile(x, n):
 
     # Returns
         A tiled tensor.
+
+    # Example
+    ```python
+        >>> from keras import backend as K
+        >>> kvar = K.variable(np.random.random((2, 3)))
+        >>> kvar_tile = K.tile(K.eye(2), (2, 3))
+        >>> K.eval(kvar_tile)
+        array([[1., 0., 1., 0., 1., 0.],
+               [0., 1., 0., 1., 0., 1.],
+               [1., 0., 1., 0., 1., 0.],
+               [0., 1., 0., 1., 0., 1.]], dtype=float32)
+    ```
+    {{np_implementation}}
     """
     if isinstance(n, int):
-        n = [n]
+        n = (n,)
+    elif isinstance(n, list):
+        n = tuple(n)
+
+    shape = int_shape(x)
+    if len(n) < len(shape):  # Padding the axis
+        n = tuple([1 for _ in range(len(shape) - len(n))]) + n
+    elif len(n) != len(shape):
+        raise NotImplementedError
+
     return tf.tile(x, n)
 
 
@@ -2596,8 +2624,13 @@ def slice(x, start, size):
         new_x = x[start[0]: start[0] + size[0], ..., start[-1]: start[-1] + size[-1]]
         ```
 
+    # Raises
+        ValueError: if the dimension and the size of indices mismatches.
+
     {{np_implementation}}
     """
+    if not (len(int_shape(x)) == len(start) == len(size)):
+        raise ValueError('The dimension and the size of indices should match.')
     return tf.slice(x, start, size)
 
 
