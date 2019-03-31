@@ -16,7 +16,8 @@ def variable(value, dtype=None, name=None, constraint=None):
 	if constraint is not None:
 		raise TypeError("Constraint is the projection function to be "
 						"applied to the variable after an optimizer update")
-	return execution_tree.var(np.array(value, dtype))
+	return execution_tree.variable(np.array(value, dtype=dtype),
+								dtype=dtype, name=name)
 
 
 def eval(x):
@@ -125,7 +126,7 @@ def phylanx_random_uniform_variable(shape, low, high):
 	return random(shape, ["uniform", low, high])
 
 def random_uniform_variable(shape, low, high, dtype=None, name=None, seed=None):
-	return execution_tree.var(phylanx_random_uniform_variable(shape, low, high))
+	return execution_tree.variable(phylanx_random_uniform_variable(shape, low, high))
 
 
 @Phylanx
@@ -133,7 +134,7 @@ def phylanx_random_normal_variable(shape, mean, scale):
 	return random(shape, ["normal", mean, scale])
 
 def random_normal_variable(shape, mean, scale, dtype=None, name=None, seed=None):
-	return execution_tree.var(phylanx_random_normal_variable(shape, mean, scale))
+	return execution_tree.variable(phylanx_random_normal_variable(shape, mean, scale))
 
 
 @Phylanx
@@ -502,12 +503,12 @@ def dropout(x, level, noise_shape=None, seed=None):
 	return dropout_eager(x, level, noise_shape, seed)
 
 
-#@Phylanx
-#def relu_eager(x, alpha, max_value, threshold):
-#	return relu(x, alpha, max_value, threshold)
+@Phylanx
+def relu_eager(x, alpha, max_value, threshold):
+	return relu(x, alpha, max_value, threshold)
 
-#def relu(x, alpha=0.0, max_value=None, threshold=0.0):
-#	return relu_eager.lazy(x, alpha, max_value, threshold)
+def relu(x, alpha=0.0, max_value=None, threshold=0.0):
+	return relu_eager.lazy(x, alpha, max_value, threshold)
 
 
 @Phylanx
@@ -568,11 +569,19 @@ def softmax(x, axis=-1):
 
 
 #@Phylanx
-#def l2_normalize_eager(x, axis):
-#	return l2_normalize(x, axis)
+#def categorical_crossentropy_eager(target, output, from_logits, axis):
+#	return categorical_crossentropy(target, output, from_logits)
 
-#def l2_normalize(x, axis=None):
-#	return l2_normalize_eager.lazy(x, axis)
+#def categorical_crossentropy(target, output, from_logits=False, axis=-1):
+#	return categorical_crossentropy_eager.lazy(target, output, from_logits, axis)
+
+
+@Phylanx
+def l2_normalize_eager(x, axis):
+	return l2_normalize(x, axis)
+
+def l2_normalize(x, axis=None):
+	return l2_normalize_eager.lazy(x, axis)
 
 
 @Phylanx
@@ -648,10 +657,27 @@ def temporal_padding(x, padding=(1, 1)):
 
 
 #@Phylanx
-#def one_hot_eager(indices, num_classes):
-#	return one_hot(indices, num_classes)
-#def one_hot(indices, num_classes):
-#	return one_hot_eager.lazy(indices, num_classes)
+#def slice_eager(x, indices):
+#	if x.ndim == 1:
+#		return slice(x, indices[0])
+#	elif x.ndim == 2:
+#		return slice(x, indices[0], indices[1])
+#	elif x.ndim == 3:
+#		return slice(x, indices[0], indices[1], indices[2])
+
+#def slice(x, start, size):
+#	indices = [[i, i+j] for i, j in zip(start, size)]
+#	return slice_eager.lazy(x, indices)
+
+
+@Phylanx
+def one_hot_eager(indices, num_classes):
+	return one_hot(indices, num_classes)
+
+def one_hot(indices, num_classes):
+	return one_hot_eager.lazy(indices, num_classes)
+
+
 # tested in map_fn and gradient
 @Phylanx
 def sum_eager(x, axis, keepdims):
@@ -678,13 +704,13 @@ def constant(value, dtype=None, shape=None, name=None):
 	return constant_eager.lazy(value, dtype, shape)
 
 
-# dtype problem
-#@Phylanx
-#def arange_eager(start, stop, step, dtype):
-#	return np.arange(start, stop, step)
+ #dtype problem
+@Phylanx
+def arange_eager(start, stop, step, dtype):
+	return np.arange(start, stop, step)
 
-#def arange(start, stop=None, step=1, dtype='int32'):
-#	return arange_eager.lazy(start, stop, step, dtype)
+def arange(start, stop=None, step=1, dtype='int32'):
+	return arange_eager.lazy(start, stop, step, dtype)
 
 
 #returns a list and asserted with a tuple
@@ -708,4 +734,32 @@ def count_params(x):
 
 
 def dtype(x):
-	return execution_tree.var(x).dtype
+	return execution_tree.variable(x).dtype
+
+
+#@Phylanx
+#def max_pool_eager(x, pool_size, strides, padding):
+#	return max_pool(x, pool_size, padding, strides)
+
+#def pool2d(x, pool_size, strides=(1, 1), padding='valid',
+#		   data_format=None, pool_mode='max'):
+#	#if data_format == 'channels_last':
+#	#	if x.ndim == 4:
+#	#		x = np.transpose(x, (0, 3, 1, 2))
+#	#	else:
+#	#		raise IndexError("Constraint is the projection function to be "
+#	#					"applied to the variable after an optimizer update")
+
+#	if pool_mode == "max":
+#		z = []
+#		for fourth in range(3):
+#			y = []
+#			for third in range(3):
+#				y.append(max_pool_eager.lazy(x[fourth,third,:,:], pool_size, strides, padding))
+#			y = np.stack(y, axis=0)
+#			z.append(y)
+#		z = np.stack(z,axis=0)
+#		return z
+
+
+

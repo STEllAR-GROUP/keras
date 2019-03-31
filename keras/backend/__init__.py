@@ -82,7 +82,7 @@ from .load_backend import resize_images
 from .load_backend import resize_volumes
 from .load_backend import repeat_elements
 from .load_backend import repeat
-#from .load_backend import arange
+from .load_backend import arange
 from .load_backend import tile
 from .load_backend import flatten
 from .load_backend import batch_flatten
@@ -92,7 +92,8 @@ from .load_backend import temporal_padding
 #from .load_backend import spatial_2d_padding
 #from .load_backend import spatial_3d_padding
 from .load_backend import stack
-from .load_backend import one_hotfrom .load_backend import reverse
+from .load_backend import one_hot
+from .load_backend import reverse
 #from .load_backend import slice
 from .load_backend import get_value
 #from .load_backend import batch_get_value
@@ -106,7 +107,7 @@ from .load_backend import get_value
 #from .load_backend import switch
 #from .load_backend import in_train_phase
 #from .load_backend import in_test_phase
-#from .load_backend import relu
+from .load_backend import relu
 from .load_backend import elu
 from .load_backend import softmax
 from .load_backend import softplus
@@ -118,7 +119,7 @@ from .load_backend import sigmoid
 from .load_backend import hard_sigmoid
 from .load_backend import tanh
 from .load_backend import dropout
-#from .load_backend import l2_normalize
+from .load_backend import l2_normalize
 #from .load_backend import in_top_k
 #from .load_backend import conv1d
 #from .load_backend import separable_conv1d

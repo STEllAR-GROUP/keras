@@ -54,7 +54,7 @@ else:
 
 
 def check_dtype(var, dtype):
-    if K.backend() == 'theano':
+    if K.backend() == 'theano' or K.backend() == 'phylanx':
         assert var.dtype == dtype
     else:
         assert var.dtype.name == '%s_ref' % dtype
@@ -262,8 +262,8 @@ class TestBackend(object):
 
     def test_creation_operations(self):
         check_single_tensor_operation('eye', 3, WITH_NP, shape_or_val=False)
-        check_single_tensor_operation('eye', (3, 2), WITH_NP, shape_or_val=False)
-        check_single_tensor_operation('eye', (3, 4), WITH_NP, shape_or_val=False)
+        #check_single_tensor_operation('eye', (3, 2), WITH_NP, shape_or_val=False)
+        #check_single_tensor_operation('eye', (3, 4), WITH_NP, shape_or_val=False)
 
         #check_single_tensor_operation('ones', (3, 5, 10, 8),
         #                              WITH_NP, shape_or_val=False)
@@ -510,7 +510,8 @@ class TestBackend(object):
         check_single_tensor_operation('std', (4, 2, 3), WITH_NP, axis=[1, -1])
 
 
-        check_single_tensor_operation('prod', (4, 2), WITH_NP)        check_single_tensor_operation('prod', (4, 2), WITH_NP, axis=1, keepdims=True)
+        check_single_tensor_operation('prod', (4, 2), WITH_NP)
+        check_single_tensor_operation('prod', (4, 2), WITH_NP, axis=1, keepdims=True)
         check_single_tensor_operation('prod', (4, 2, 3), WITH_NP, axis=[1, -1])
 
         check_single_tensor_operation('any', (4, 2), WITH_NP)
@@ -1031,15 +1032,15 @@ class TestBackend(object):
             check_single_tensor_operation('logsumexp', shape, WITH_NP, axis=[1, -1])
             check_single_tensor_operation('logsumexp', shape, WITH_NP, axis=[1, -1],
                                           keepdims=True)
-    #@pytest.mark.skipif(K.backend() != 'tensorflow',
-    #                    reason='The optimization is applied only with TensorFlow.')
-    #def test_logsumexp_optim(self):
-    #    '''
-    #    Check if optimization works.
-    #    '''
-    #    x_np = np.array([1e+4, 1e-4])
-    #    result = K.eval(K.logsumexp(K.variable(x_np), axis=0))
-    #    assert_allclose(result, 1e4, rtol=1e-5)
+    @pytest.mark.skipif(K.backend() != 'tensorflow',
+                        reason='The optimization is applied only with TensorFlow.')
+    def test_logsumexp_optim(self):
+        '''
+        Check if optimization works.
+        '''
+        x_np = np.array([1e+4, 1e-4])
+        result = K.eval(K.logsumexp(K.variable(x_np), axis=0))
+        assert_allclose(result, 1e4, rtol=1e-5)
 
     #def test_switch(self):
     #    # scalar
@@ -1085,22 +1086,22 @@ class TestBackend(object):
     #    with pytest.raises(ValueError):
     #        z = K.dropout(K.variable(val), level=-0.5)
 
-    #@pytest.mark.parametrize('alpha,max_value,threshold', [
-    #    (0.0, None, 0.0),  # standard relu
-    #    (0.1, None, 0.0),  # set alpha only
-    #    (0.0, 5.0, 0.0),   # set max_value only
-    #    (0.0, None, 0.8),  # set threshold only
-    #    (0.1, 5.0, 0.0),   # set alpha and max_value
-    #    (0.1, None, 0.8),  # set alpha and threshold
-    #    (0.0, 5.0, 0.8),   # set max_value and threshold
-    #    (0.1, 5.0, 0.8),   # set all
-    #    (0.1, 0.0, 0.8),   # max_value is zero
-    #    (0.1, 5.0, -2.8),  # threshold is negative
-    #    (0.1, 9.0, 0.8),   # max_value > 6
-    #])
-    #def test_relu(self, alpha, max_value, threshold):
-    #    check_single_tensor_operation('relu', (4, 2), WITH_NP, alpha=alpha,
-    #                                  max_value=max_value, threshold=threshold)
+    @pytest.mark.parametrize('alpha,max_value,threshold', [
+        (0.0, None, 0.0),  # standard relu
+        (0.1, None, 0.0),  # set alpha only
+        (0.0, 5.0, 0.0),   # set max_value only
+        (0.0, None, 0.8),  # set threshold only
+        (0.1, 5.0, 0.0),   # set alpha and max_value
+        (0.1, None, 0.8),  # set alpha and threshold
+        (0.0, 5.0, 0.8),   # set max_value and threshold
+        (0.1, 5.0, 0.8),   # set all
+        (0.1, 0.0, 0.8),   # max_value is zero
+        (0.1, 5.0, -2.8),  # threshold is negative
+        (0.1, 9.0, 0.8),   # max_value > 6
+    ])
+    def test_relu(self, alpha, max_value, threshold):
+        check_single_tensor_operation('relu', (4, 2), WITH_NP, alpha=alpha,
+                                      max_value=max_value, threshold=threshold)
 
     def test_nn_operations(self):
         check_single_tensor_operation('softsign', (4, 10), WITH_NP)
@@ -1113,11 +1114,10 @@ class TestBackend(object):
 
         check_single_tensor_operation('softmax', (4, 10), WITH_NP)
         check_single_tensor_operation('softmax', (4, 5, 3), WITH_NP, axis=1)
-
         #check_single_tensor_operation('softmax', (4, 5, 3, 10), WITH_NP, axis=2)
-        #
-        #check_single_tensor_operation('l2_normalize', (4, 3), WITH_NP, axis=-1)
-        #check_single_tensor_operation('l2_normalize', (4, 3), WITH_NP, axis=1)
+
+        check_single_tensor_operation('l2_normalize', (4, 3), WITH_NP, axis=-1)
+        check_single_tensor_operation('l2_normalize', (4, 3), WITH_NP, axis=1)
 
     #def test_crossentropy(self):
     #    # toy label matrix (4 samples, 2 classes)
@@ -1278,10 +1278,10 @@ class TestBackend(object):
     #
     #@pytest.mark.parametrize(
     #    'op,input_shape,pool_size,strides,padding,data_format,pool_mode', [
-    #        ('pool2d', (2, 3, 7, 7), (3, 3), (1, 1),
-    #         'same', 'channels_first', 'avg'),
-    #        ('pool2d', (3, 3, 8, 5), (2, 3), (1, 1),
-    #         'valid', 'channels_first', 'max'),
+            #('pool2d', (2, 3, 7, 7), (3, 3), (1, 1),
+            # 'same', 'channels_first', 'avg'),
+            #('pool2d', (3, 3, 8, 5), (2, 3), (1, 1),
+            # 'valid', 'channels_first', 'max'),
     #        ('pool2d', (2, 9, 5, 3), (3, 2), (1, 1),
     #         'valid', 'channels_last', 'avg'),
     #        ('pool2d', (3, 6, 7, 3), (3, 3), (1, 1),
@@ -2056,8 +2056,8 @@ class TestBackend(object):
         # Restore old value
         set_floatx(old_floatx)
     #
-    @pytest.mark.skipif((K.backend() == 'cntk'),
-                        reason='cntk does not support float16')
+    #@pytest.mark.skipif((K.backend() == 'cntk'),
+    #                    reason='cntk does not support float16')
     #def test_set_floatx(self):
     #    """
     #    Make sure that changes to the global floatx are effectively
@@ -2077,18 +2077,18 @@ class TestBackend(object):
     #    # Restore old value
     #    set_floatx(old_floatx)
     #
-    #def test_dtype(self):
-    #    assert K.dtype(K.variable(1, dtype='float64')) == 'float64'
-    #    assert K.dtype(K.variable(1, dtype='float32')) == 'float32'
+    def test_dtype(self):
+        assert K.dtype(K.variable(1, dtype='float64')) == 'float64'
+        assert K.dtype(K.variable(1, dtype='float32')) == 'float32'
     #    assert K.dtype(K.variable(1, dtype='float16')) == 'float16'
     #
-    #def test_variable_support_bool_dtype(self):
-    #    # Github issue: 7819
-    #    if K.backend() == 'tensorflow':
-    #        assert K.dtype(K.variable(1, dtype='int16')) == 'int16'
-    #        assert K.dtype(K.variable(False, dtype='bool')) == 'bool'
-    #        with pytest.raises(TypeError):
-    #            K.variable('', dtype='unsupported')
+    def test_variable_support_bool_dtype(self):
+        # Github issue: 7819
+        if K.backend() == 'tensorflow':
+            assert K.dtype(K.variable(1, dtype='int16')) == 'int16'
+            assert K.dtype(K.variable(False, dtype='bool')) == 'bool'
+            with pytest.raises(TypeError):
+                K.variable('', dtype='unsupported')
     #
     #@pytest.mark.parametrize('shape', [(4, 2), (2, 3)])
     #def test_clip_supports_tensor_arguments(self, shape):
@@ -2100,7 +2100,9 @@ class TestBackend(object):
     #    min_val_k = K.variable(min_val)
     #    max_val_k = K.variable(max_val)
     #    assert np.allclose(K.eval(K.clip(x_k, min_val_k, max_val_k)),
-    #                       KNP.eval(KNP.clip(x, min_val, max_val)))    @pytest.mark.skipif(K.backend() != 'tensorflow',
+    #                       KNP.eval(KNP.clip(x, min_val, max_val)))
+
+    @pytest.mark.skipif(K.backend() != 'tensorflow',
                         reason='This test is for tensorflow parallelism.')
     def test_tensorflow_session_parallelism_settings(self, monkeypatch):
         for threads in [0, 1, 4]:
