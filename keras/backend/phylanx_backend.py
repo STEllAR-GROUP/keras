@@ -5,14 +5,15 @@ from __future__ import print_function
 
 import numpy as np
 from phylanx import Phylanx, PhylanxSession, execution_tree
-from .common import floatx, set_floatx
-from .common import epsilon, set_epsilon
-from .common import normalize_data_format
+from .common import floatx
+from .common import epsilon
 
 PhylanxSession.init(1)
 
 
 def variable(value, dtype=None, name=None, constraint=None):
+	if dtype is None:
+		dtype = floatx()
 	if constraint is not None:
 		raise TypeError("Constraint is the projection function to be "
 						"applied to the variable after an optimizer update")
@@ -43,14 +44,16 @@ def ndim(x):
 	return ndim_eager.lazy(x)
 
 
-
-
 @Phylanx
-def eye_eager(size, dtype, name):
-	return np.eye(size)
+def eye_eager(n, m, dtype, name):
+	return np.eye(n, m)
 
 def eye(size, dtype=None, name=None):
-	return eye_eager.lazy(size)
+	if isinstance(size, (list, tuple)):
+		n, m = size
+	else:
+		n, m = size, size
+	return eye_eager.lazy(n, m, dtype)
 
 
 # 4d
@@ -481,6 +484,17 @@ def log(x):
 	return log_eager.lazy(x)
 
 
+#@Phylanx
+#def switch_eager(condition, then_expression, else_expression):
+#	return then_expression if condition else else_expression
+
+#def switch(condition, then_expression, else_expression):
+#	cond_float = condition.astype(floatx())
+#	while cond_float.ndim < then_expression.ndim:
+#		cond_float = cond_float[..., np.newaxis]
+#	return switch_eager.lazy(cond_float, then_expression, else_expression)
+
+
 @Phylanx
 def _dropout(x, level, noise_shape, seed):
 	if seed:
@@ -500,6 +514,8 @@ def dropout_eager(x, level, noise_shape, seed):
 	return _no_dropout.lazy(x)
 
 def dropout(x, level, noise_shape=None, seed=None):
+	if level < 0:
+		raise ValueError("the level for dropout should be non-negative")
 	return dropout_eager(x, level, noise_shape, seed)
 
 
@@ -513,7 +529,7 @@ def relu(x, alpha=0.0, max_value=None, threshold=0.0):
 
 @Phylanx
 def softsign_eager(x):
-	return x / (1 + absolute(x))
+	return softsign(x)
 
 def softsign(x):
 	return softsign_eager.lazy(x)
@@ -656,18 +672,15 @@ def temporal_padding(x, padding=(1, 1)):
 	return temporal_padding_eager.lazy(x, padding)
 
 
-#@Phylanx
-#def slice_eager(x, indices):
-#	if x.ndim == 1:
-#		return slice(x, indices[0])
-#	elif x.ndim == 2:
-#		return slice(x, indices[0], indices[1])
-#	elif x.ndim == 3:
-#		return slice(x, indices[0], indices[1], indices[2])
+@Phylanx
+def slice_eager(x, indices):
+	return tuple_slice(x, indices)
 
-#def slice(x, start, size):
-#	indices = [[i, i+j] for i, j in zip(start, size)]
-#	return slice_eager.lazy(x, indices)
+def slice(x, start, size):
+	if len(start) != len(size):
+		raise ValueError("start and size arguments should have the same shape")
+	indices = [[i, i+j] for i, j in zip(start, size)]
+	return slice_eager.lazy(x, indices)
 
 
 @Phylanx

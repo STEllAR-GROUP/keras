@@ -262,8 +262,8 @@ class TestBackend(object):
 
     def test_creation_operations(self):
         check_single_tensor_operation('eye', 3, WITH_NP, shape_or_val=False)
-        #check_single_tensor_operation('eye', (3, 2), WITH_NP, shape_or_val=False)
-        #check_single_tensor_operation('eye', (3, 4), WITH_NP, shape_or_val=False)
+        check_single_tensor_operation('eye', (3, 2), WITH_NP, shape_or_val=False)
+        check_single_tensor_operation('eye', (3, 4), WITH_NP, shape_or_val=False)
 
         #check_single_tensor_operation('ones', (3, 5, 10, 8),
         #                              WITH_NP, shape_or_val=False)
@@ -654,95 +654,95 @@ class TestBackend(object):
     #    new_val_list = [k.get_value(x) for x, k in zip(x_list, test_backend)]
     #    assert_list_pairwise(new_val_list)
 
-    #@pytest.mark.skipif(K.backend() != 'tensorflow',
-    #                    reason='Uses the `fetches` argument.')
-    #def test_function_tf_fetches(self):
-    #    # Additional operations can be passed to tf.Session().run() via its
-    #    # `fetches` arguments. In contrast to `updates` argument of
-    #    # KTF.function() these do not have control dependency on `outputs`, so
-    #    # they can run in parallel. Also they should not contribute to output of
-    #    # KTF.function().
+    @pytest.mark.skipif(K.backend() != 'tensorflow',
+                        reason='Uses the `fetches` argument.')
+    def test_function_tf_fetches(self):
+        # Additional operations can be passed to tf.Session().run() via its
+        # `fetches` arguments. In contrast to `updates` argument of
+        # KTF.function() these do not have control dependency on `outputs`, so
+        # they can run in parallel. Also they should not contribute to output of
+        # KTF.function().
 
-    #    x = K.variable(0.)
-    #    y = K.variable(0.)
-    #    x_placeholder = K.placeholder(shape=())
-    #    y_placeholder = K.placeholder(shape=())
+        x = K.variable(0.)
+        y = K.variable(0.)
+        x_placeholder = K.placeholder(shape=())
+        y_placeholder = K.placeholder(shape=())
 
-    #    f = K.function(inputs=[x_placeholder, y_placeholder],
-    #                   outputs=[x_placeholder + y_placeholder],
-    #                   updates=[(x, x_placeholder + 1.)],
-    #                   fetches=[K.update(y, 5.)])
-    #    output = f([10., 20.])
-    #    assert output == [30.]
-    #    assert K.get_session().run(fetches=[x, y]) == [11., 5.]
+        f = K.function(inputs=[x_placeholder, y_placeholder],
+                       outputs=[x_placeholder + y_placeholder],
+                       updates=[(x, x_placeholder + 1.)],
+                       fetches=[K.update(y, 5.)])
+        output = f([10., 20.])
+        assert output == [30.]
+        assert K.get_session().run(fetches=[x, y]) == [11., 5.]
 
-    #@pytest.mark.skipif(K.backend() != 'tensorflow',
-    #                    reason='Uses the `feed_dict` argument.')
-    #def test_function_tf_feed_dict(self):
-    #    # Additional substitutions can be passed to `tf.Session().run()` via its
-    #    # `feed_dict` arguments. Note that the feed_dict is passed once in the
-    #    # constructor but we can modify the values in the dictionary. Through
-    #    # this feed_dict we can provide additional substitutions besides Keras
-    #    # inputs.
+    @pytest.mark.skipif(K.backend() != 'tensorflow',
+                        reason='Uses the `feed_dict` argument.')
+    def test_function_tf_feed_dict(self):
+        # Additional substitutions can be passed to `tf.Session().run()` via its
+        # `feed_dict` arguments. Note that the feed_dict is passed once in the
+        # constructor but we can modify the values in the dictionary. Through
+        # this feed_dict we can provide additional substitutions besides Keras
+        # inputs.
 
-    #    x = K.variable(0.)
-    #    y = K.variable(0.)
-    #    x_placeholder = K.placeholder(shape=())
-    #    y_placeholder = K.placeholder(shape=())
+        x = K.variable(0.)
+        y = K.variable(0.)
+        x_placeholder = K.placeholder(shape=())
+        y_placeholder = K.placeholder(shape=())
 
-    #    feed_dict = {y_placeholder: 3.}
+        feed_dict = {y_placeholder: 3.}
 
-    #    f = K.function(inputs=[x_placeholder],
-    #                   outputs=[x_placeholder + 1.],
-    #                   updates=[(x, x_placeholder + 10.)],
-    #                   feed_dict=feed_dict,
-    #                   fetches=[K.update(y, y_placeholder * 10.)])
-    #    output = f([10.])
-    #    assert output == [11.]
-    #    assert K.get_session().run(fetches=[x, y]) == [20., 30.]
+        f = K.function(inputs=[x_placeholder],
+                       outputs=[x_placeholder + 1.],
+                       updates=[(x, x_placeholder + 10.)],
+                       feed_dict=feed_dict,
+                       fetches=[K.update(y, y_placeholder * 10.)])
+        output = f([10.])
+        assert output == [11.]
+        assert K.get_session().run(fetches=[x, y]) == [20., 30.]
 
-    #    # updated value in feed_dict will be modified within the K.function()
-    #    feed_dict[y_placeholder] = 4.
-    #    output = f([20.])
-    #    assert output == [21.]
-    #    assert K.get_session().run(fetches=[x, y]) == [30., 40.]
+        # updated value in feed_dict will be modified within the K.function()
+        feed_dict[y_placeholder] = 4.
+        output = f([20.])
+        assert output == [21.]
+        assert K.get_session().run(fetches=[x, y]) == [30., 40.]
 
-    #@pytest.mark.skipif(K.backend() != 'tensorflow',
-    #                    reason='Uses the `options` and `run_metadata` arguments.')
-    #def test_function_tf_run_options_with_run_metadata(self):
-    #    from tensorflow.core.protobuf import config_pb2
-    #    x_placeholder = K.placeholder(shape=())
-    #    y_placeholder = K.placeholder(shape=())
+    @pytest.mark.skipif(K.backend() != 'tensorflow',
+                        reason='Uses the `options` and `run_metadata` arguments.')
+    def test_function_tf_run_options_with_run_metadata(self):
+        from tensorflow.core.protobuf import config_pb2
+        x_placeholder = K.placeholder(shape=())
+        y_placeholder = K.placeholder(shape=())
 
-    #    run_options = config_pb2.RunOptions(output_partition_graphs=True)
-    #    run_metadata = config_pb2.RunMetadata()
-    #    # enable run_options.
-    #    f = K.function(inputs=[x_placeholder, y_placeholder],
-    #                   outputs=[x_placeholder + y_placeholder],
-    #                   options=run_options,
-    #                   run_metadata=run_metadata)
-    #    output = f([10., 20.])
-    #    assert output == [30.]
-    #    assert len(run_metadata.partition_graphs) > 0
-    #    # disable run_options.
-    #    f = K.function(inputs=[x_placeholder, y_placeholder],
-    #                   outputs=[x_placeholder + y_placeholder],
-    #                   run_metadata=run_metadata)
-    #    output = f([10., 20.])
-    #    assert output == [30.]
-    #    assert len(run_metadata.partition_graphs) == 0
+        run_options = config_pb2.RunOptions(output_partition_graphs=True)
+        run_metadata = config_pb2.RunMetadata()
+        # enable run_options.
+        f = K.function(inputs=[x_placeholder, y_placeholder],
+                       outputs=[x_placeholder + y_placeholder],
+                       options=run_options,
+                       run_metadata=run_metadata)
+        output = f([10., 20.])
+        assert output == [30.]
+        assert len(run_metadata.partition_graphs) > 0
+        # disable run_options.
+        f = K.function(inputs=[x_placeholder, y_placeholder],
+                       outputs=[x_placeholder + y_placeholder],
+                       run_metadata=run_metadata)
+        output = f([10., 20.])
+        assert output == [30.]
+        assert len(run_metadata.partition_graphs) == 0
 
-    #@pytest.mark.skipif(K.backend() != 'tensorflow',
-    #                    reason='Uses the `string` type for a tensor.')
-    #def test_function_tf_string_input(self):
-    #    # Test functions with string inputs.
+    @pytest.mark.skipif(K.backend() != 'tensorflow',
+                        reason='Uses the `string` type for a tensor.')
+    def test_function_tf_string_input(self):
+        # Test functions with string inputs.
 
-    #    x_placeholder = K.placeholder(shape=(), dtype="string")
-    #    x_identity = K.identity(x_placeholder)
+        x_placeholder = K.placeholder(shape=(), dtype="string")
+        x_identity = K.identity(x_placeholder)
 
-    #    f = K.function(inputs=[x_placeholder], outputs=[x_identity])
-    #    output = f([b'test'])
-    #    assert output == [b'test']
+        f = K.function(inputs=[x_placeholder], outputs=[x_identity])
+        output = f([b'test'])
+        assert output == [b'test']
 
     #def test_rnn(self):
     #    # implement a simple RNN
@@ -1065,26 +1065,26 @@ class TestBackend(object):
     #            z_list.append(k.eval(k.switch(cond, then_expr, else_expr)))
     #        assert_list_pairwise(z_list)
 
-    #def test_dropout(self):
-    #    val = np.random.random((100, 100))
-    #    z_list = [k.eval(k.dropout(k.variable(val), level=0.2))
-    #              for k in WITH_NP]
-    #    assert_list_pairwise(z_list, allclose=False)
-    #    # dropout patterns are different, only check mean
-    #    for i in range(len(z_list) - 1):
-    #        assert np.abs(z_list[i].mean() - z_list[i + 1].mean()) < 0.05
+    def test_dropout(self):
+        val = np.random.random((100, 100))
+        z_list = [k.eval(k.dropout(k.variable(val), level=0.2))
+                  for k in WITH_NP]
+        assert_list_pairwise(z_list, allclose=False)
+        # dropout patterns are different, only check mean
+        for i in range(len(z_list) - 1):
+            assert np.abs(z_list[i].mean() - z_list[i + 1].mean()) < 0.05
 
-    #    z_list = [k.eval(k.dropout(k.variable(val), level=0.2,
-    #                               noise_shape=list(val.shape)))
-    #              for k in WITH_NP]
-    #    assert_list_pairwise(z_list, allclose=False)
-    #    # dropout patterns are different, only check mean
-    #    for i in range(len(z_list) - 1):
-    #        assert np.abs(z_list[i].mean() - z_list[i + 1].mean()) < 0.05
+        z_list = [k.eval(k.dropout(k.variable(val), level=0.2,
+                                   noise_shape=list(val.shape)))
+                  for k in WITH_NP]
+        assert_list_pairwise(z_list, allclose=False)
+        # dropout patterns are different, only check mean
+        for i in range(len(z_list) - 1):
+            assert np.abs(z_list[i].mean() - z_list[i + 1].mean()) < 0.05
 
-    #    # Test invalid use cases
-    #    with pytest.raises(ValueError):
-    #        z = K.dropout(K.variable(val), level=-0.5)
+        # Test invalid use cases
+        with pytest.raises(ValueError):
+            z = K.dropout(K.variable(val), level=-0.5)
 
     @pytest.mark.parametrize('alpha,max_value,threshold', [
         (0.0, None, 0.0),  # standard relu
@@ -1598,18 +1598,18 @@ class TestBackend(object):
     #    b = K.variable(np.random.random(bias_shape))
     #    with pytest.raises(ValueError):
     #        K.bias_add(x, b, data_format='channels_middle')
-    #
-    #@pytest.mark.skipif(K.backend() != 'theano',
-    #                    reason='Specific to Theano.')
-    #@pytest.mark.parametrize('x_shape', [(1, 4, 2, 3), (1, 2, 3, 4)])
-    #def test_batchnorm_th(self, x_shape):
-    #    x_val = np.random.random(x_shape).astype(np.float32)
-    #    x = K.variable(x_val)
-    #    z, _, _ = K.normalize_batch_in_training(
-    #        x, None, None, reduction_axes='per-activation')
-    #    z = K.eval(z)
-    #    assert z.shape == x_shape
-    #
+
+    @pytest.mark.skipif(K.backend() != 'theano',
+                        reason='Specific to Theano.')
+    @pytest.mark.parametrize('x_shape', [(1, 4, 2, 3), (1, 2, 3, 4)])
+    def test_batchnorm_th(self, x_shape):
+        x_val = np.random.random(x_shape).astype(np.float32)
+        x = K.variable(x_val)
+        z, _, _ = K.normalize_batch_in_training(
+            x, None, None, reduction_axes='per-activation')
+        z = K.eval(z)
+        assert z.shape == x_shape
+
     #@pytest.mark.skipif(K.backend() != 'tensorflow',
     #                    reason='Specific to Tensorflow.')
     #@pytest.mark.parametrize('x_shape', [(1, 4, 2, 3), (1, 2, 3, 4)])
@@ -1620,17 +1620,17 @@ class TestBackend(object):
     #        x, None, None, reduction_axes=[0, 1, 2, 3])
     #    z = K.eval(z)
     #    assert z.shape == x_shape
-    #
-    #@pytest.mark.skipif(K.backend() != 'cntk', reason='Specific to CNTK.')
-    #@pytest.mark.parametrize('x_shape', [(1, 4, 2, 3), (1, 2, 3, 4)])
-    #def test_batchnorm_cntk(self, x_shape):
-    #    x_val = np.random.random(x_shape).astype(np.float32)
-    #    x = K.placeholder(x_shape)
-    #    z, _, _ = K.normalize_batch_in_training(
-    #        x, None, None, reduction_axes=[0, 1, 2, 3])
-    #    z = K.function([x], [z])([x_val])[0]
-    #    assert z.shape == x_shape
-    #
+
+    @pytest.mark.skipif(K.backend() != 'cntk', reason='Specific to CNTK.')
+    @pytest.mark.parametrize('x_shape', [(1, 4, 2, 3), (1, 2, 3, 4)])
+    def test_batchnorm_cntk(self, x_shape):
+        x_val = np.random.random(x_shape).astype(np.float32)
+        x = K.placeholder(x_shape)
+        z, _, _ = K.normalize_batch_in_training(
+            x, None, None, reduction_axes=[0, 1, 2, 3])
+        z = K.function([x], [z])([x_val])[0]
+        assert z.shape == x_shape
+
     ## the Theano and TensorFlow CTC code use different methods to ensure
     ## numerical stability.  The Theano code subtracts out the max
     ## before the final log, so the results are different but scale
@@ -1755,20 +1755,20 @@ class TestBackend(object):
     #
     #    assert np.alltrue(decode_pred_np == decode_pred)
     #    assert np.allclose(log_prob_pred_np, log_prob_pred)
-    #
-    #@pytest.mark.parametrize('shape,start,size', [
-    #    ((2, 5), (0, 1), (2, 3)),
-    #    ((2, 5), (1, 0), (1, 4)),
-    #    ((3, 2, 3), (1, 1, 0), (1, 1, 3)),
-    #    ((3, 2, 3), (1, 0, 0), (1, 2, 3)),
-    #    ((3, 2, 3), (1, 0, 0), (2, 1, 3)),
-    #])
-    #def test_slice(self, shape, start, size):
-    #    check_single_tensor_operation('slice', shape, WITH_NP,
-    #                                  start=start, size=size)
-    #    with pytest.raises(ValueError):
-    #        K.slice(K.variable(np.random.random(shape)),
-    #                start=[1, 0, 0, 0], size=size)
+
+    @pytest.mark.parametrize('shape,start,size', [
+        ((2, 5), (0, 1), (2, 3)),
+        ((2, 5), (1, 0), (1, 4)),
+        ((3, 2, 3), (1, 1, 0), (1, 1, 3)),
+        ((3, 2, 3), (1, 0, 0), (1, 2, 3)),
+        ((3, 2, 3), (1, 0, 0), (2, 1, 3)),
+    ])
+    def test_slice(self, shape, start, size):
+        check_single_tensor_operation('slice', shape, WITH_NP,
+                                      start=start, size=size)
+        with pytest.raises(ValueError):
+            K.slice(K.variable(np.random.random(shape)),
+                    start=[1, 0, 0, 0], size=size)
 
     @pytest.mark.skipif(K.backend() != 'tensorflow',
                         reason='Beam search is only implemented with '
@@ -1879,69 +1879,69 @@ class TestBackend(object):
         koh = K.eval(K.one_hot(K.variable(indices, dtype='int32'), num_classes))
         assert np.all(koh == oh)
 
-    #@pytest.mark.skipif(not supports_sparse,
-    #                    reason='Sparse tensors are not supported in cntk '
-    #                           'and Theano has some dependency issues for sparse.')
-    #def test_sparse_dot(self):
-    #    x_d = np.array([0, 7, 2, 3], dtype=np.float32)
-    #    x_r = np.array([0, 2, 2, 3], dtype=np.int64)
-    #    x_c = np.array([4, 3, 2, 3], dtype=np.int64)
-    #
-    #    x_sparse = sparse.csr_matrix((x_d, (x_r, x_c)), shape=(4, 5))
-    #    x_dense = x_sparse.toarray()
-    #
-    #    W = np.random.random((5, 4))
-    #    t_W = K.variable(W)
-    #    k_s = K.eval(K.dot(K.variable(x_sparse), t_W))
-    #    k_d = K.eval(K.dot(K.variable(x_dense), t_W))
-    #
-    #    assert k_s.shape == k_d.shape
-    #    assert_allclose(k_s, k_d, atol=1e-05)
-    #
-    #@pytest.mark.skipif(not supports_sparse,
-    #                    reason='Sparse tensors are not supported in cntk '
-    #                           'and Theano has some dependency issues for sparse.')
-    #def test_sparse_concat(self):
-    #    x_d = np.array([0, 7, 2, 3], dtype=np.float32)
-    #    x_r = np.array([0, 2, 2, 3], dtype=np.int64)
-    #    x_c = np.array([4, 3, 2, 3], dtype=np.int64)
-    #
-    #    x_sparse_1 = sparse.csr_matrix((x_d, (x_r, x_c)), shape=(4, 5))
-    #
-    #    x_d = np.array([0, 7, 2, 3], dtype=np.float32)
-    #    x_r = np.array([0, 2, 2, 3], dtype=np.int64)
-    #    x_c = np.array([4, 3, 2, 3], dtype=np.int64)
-    #
-    #    x_sparse_2 = sparse.csr_matrix((x_d, (x_r, x_c)), shape=(4, 5))
-    #
-    #    x_dense_1 = x_sparse_1.toarray()
-    #    x_dense_2 = x_sparse_2.toarray()
-    #
-    #    k_s = K.concatenate([K.variable(x_sparse_1), K.variable(x_sparse_2)])
-    #    assert K.is_sparse(k_s)
-    #
-    #    k_s_d = K.eval(k_s)
-    #
-    #    k_d = K.eval(K.concatenate([K.variable(x_dense_1), K.variable(x_dense_2)]))
-    #
-    #    assert k_s_d.shape == k_d.shape
-    #    assert_allclose(k_s_d, k_d, atol=1e-05)
-    #
-    #@pytest.mark.parametrize('shape,shape2,axis', [
-    #    ((5, 2), (7, 2), 0),
-    #    ((5, 4, 6), (5, 3, 6), 1),
-    #    ((5, 4, 6, 10), (5, 4, 6, 2), 3),
-    #    ((5, 4, 6, 3), (5, 4, 6, 2), -1),
-    #])
-    #def test_concat_operations(self, shape, shape2, axis):
-    #    # In stack, each array must have the same shape.
-    #    check_two_tensor_operation('stack', shape, shape, WITH_NP,
-    #                               axis=axis, concat_args=True)
-    #    check_two_tensor_operation('concatenate', shape, shape2, WITH_NP,
-    #                               axis=axis, concat_args=True)
-    #    check_two_tensor_operation('concatenate', shape, shape2, WITH_NP,
-    #                               axis=axis, concat_args=True)
-    #
+    @pytest.mark.skipif(not supports_sparse,
+                        reason='Sparse tensors are not supported in cntk '
+                               'and Theano has some dependency issues for sparse.')
+    def test_sparse_dot(self):
+        x_d = np.array([0, 7, 2, 3], dtype=np.float32)
+        x_r = np.array([0, 2, 2, 3], dtype=np.int64)
+        x_c = np.array([4, 3, 2, 3], dtype=np.int64)
+
+        x_sparse = sparse.csr_matrix((x_d, (x_r, x_c)), shape=(4, 5))
+        x_dense = x_sparse.toarray()
+
+        W = np.random.random((5, 4))
+        t_W = K.variable(W)
+        k_s = K.eval(K.dot(K.variable(x_sparse), t_W))
+        k_d = K.eval(K.dot(K.variable(x_dense), t_W))
+
+        assert k_s.shape == k_d.shape
+        assert_allclose(k_s, k_d, atol=1e-05)
+
+    @pytest.mark.skipif(not supports_sparse,
+                        reason='Sparse tensors are not supported in cntk '
+                               'and Theano has some dependency issues for sparse.')
+    def test_sparse_concat(self):
+        x_d = np.array([0, 7, 2, 3], dtype=np.float32)
+        x_r = np.array([0, 2, 2, 3], dtype=np.int64)
+        x_c = np.array([4, 3, 2, 3], dtype=np.int64)
+
+        x_sparse_1 = sparse.csr_matrix((x_d, (x_r, x_c)), shape=(4, 5))
+
+        x_d = np.array([0, 7, 2, 3], dtype=np.float32)
+        x_r = np.array([0, 2, 2, 3], dtype=np.int64)
+        x_c = np.array([4, 3, 2, 3], dtype=np.int64)
+
+        x_sparse_2 = sparse.csr_matrix((x_d, (x_r, x_c)), shape=(4, 5))
+
+        x_dense_1 = x_sparse_1.toarray()
+        x_dense_2 = x_sparse_2.toarray()
+
+        k_s = K.concatenate([K.variable(x_sparse_1), K.variable(x_sparse_2)])
+        assert K.is_sparse(k_s)
+
+        k_s_d = K.eval(k_s)
+
+        k_d = K.eval(K.concatenate([K.variable(x_dense_1), K.variable(x_dense_2)]))
+
+        assert k_s_d.shape == k_d.shape
+        assert_allclose(k_s_d, k_d, atol=1e-05)
+
+    @pytest.mark.parametrize('shape,shape2,axis', [
+        ((5, 2), (7, 2), 0),
+        #((5, 4, 6), (5, 3, 6), 1),
+        #((5, 4, 6, 10), (5, 4, 6, 2), 3),
+        #((5, 4, 6, 3), (5, 4, 6, 2), -1),
+    ])
+    def test_concat_operations(self, shape, shape2, axis):
+        # In stack, each array must have the same shape.
+        check_two_tensor_operation('stack', shape, shape, WITH_NP,
+                                   axis=axis, concat_args=True)
+        check_two_tensor_operation('concatenate', shape, shape2, WITH_NP,
+                                   axis=axis, concat_args=True)
+        check_two_tensor_operation('concatenate', shape, shape2, WITH_NP,
+                                   axis=axis, concat_args=True)
+
     #@pytest.mark.skipif(K.backend() == 'cntk', reason='Not supported.')
     #def test_map(self):
     #    x = np.random.rand(10, 3).astype(np.float32)
@@ -1959,7 +1959,7 @@ class TestBackend(object):
     #    assert (10,) == kx2.shape
     #    assert_allclose(x.sum(axis=1), kx, atol=1e-05)
     #    assert_allclose(kx, kx2, atol=1e-05)
-    #
+
     #@pytest.mark.skipif(K.backend() == 'cntk', reason='Not supported.')
     #def test_foldl(self):
     #    x = np.random.rand(10, 3).astype(np.float32)
@@ -1967,7 +1967,7 @@ class TestBackend(object):
     #
     #    assert (3,) == kx.shape
     #    assert_allclose(x.sum(axis=0), kx, atol=1e-05)
-    #
+
     #@pytest.mark.skipif(K.backend() == 'cntk', reason='Not supported.')
     #def test_foldr(self):
     #    # This test aims to make sure that we walk the array from right to left
@@ -1981,7 +1981,7 @@ class TestBackend(object):
     #
     #    assert p1 < p2
     #    assert 9e-38 < p2 <= 1e-37
-    #
+
     #@pytest.mark.skipif(K.backend() == 'cntk',
     #                    reason='cntk has issues with negative number.')
     #def test_arange(self):
@@ -2019,21 +2019,21 @@ class TestBackend(object):
     #    start = K.constant(-1, dtype='int32')
     #    t = K.arange(start)
     #    assert len(K.eval(t)) == 0
-    #
+
     #@pytest.mark.parametrize('training', [True, False])
     #def test_in_train_phase(self, training):
     #    check_two_tensor_operation('in_train_phase', (3, 3), (2, 2), WITH_NP,
     #                               training=training)
     #    check_two_tensor_operation('in_train_phase', (2, 3), (2, 3), WITH_NP,
     #                               training=training)
-    #
+
     #@pytest.mark.parametrize('training', [True, False])
     #def test_in_test_phase(self, training):
     #    check_two_tensor_operation('in_test_phase', (3, 3), (2, 2), WITH_NP,
     #                               training=training)
     #    check_two_tensor_operation('in_test_phase', (2, 3), (2, 3), WITH_NP,
     #                               training=training)
-    #
+
     def test_setfloatx_incorrect_values(self):
         # Keep track of the old value
         old_floatx = floatx()
@@ -2055,33 +2055,35 @@ class TestBackend(object):
             assert floatx() == value
         # Restore old value
         set_floatx(old_floatx)
-    #
-    #@pytest.mark.skipif((K.backend() == 'cntk'),
-    #                    reason='cntk does not support float16')
-    #def test_set_floatx(self):
-    #    """
-    #    Make sure that changes to the global floatx are effectively
-    #    taken into account by the backend.
-    #    """
-    #    # Keep track of the old value
-    #    old_floatx = floatx()
-    #
-    #    set_floatx('float16')
-    #    var = variable([10])
-    #    check_dtype(var, 'float16')
-    #
-    #    set_floatx('float64')
-    #    var = variable([10])
-    #    check_dtype(var, 'float64')
-    #
-    #    # Restore old value
-    #    set_floatx(old_floatx)
-    #
+
+    @pytest.mark.skipif((K.backend() == 'cntk' or K.backend() == 'phylanx'),
+                        reason='cntk and phylanx do not support float16')
+    def test_set_floatx(self):
+        """
+        Make sure that changes to the global floatx are effectively
+        taken into account by the backend.
+        """
+        # Keep track of the old value
+        old_floatx = floatx()
+
+        set_floatx('float16')
+        var = variable([10])
+        check_dtype(var, 'float16')
+
+        set_floatx('float64')
+        var = variable([10])
+        check_dtype(var, 'float64')
+
+        # Restore old value
+        set_floatx(old_floatx)
+
+    @pytest.mark.skipif((K.backend() == 'phylanx'),
+                reason='phylanx do not support float16')
     def test_dtype(self):
         assert K.dtype(K.variable(1, dtype='float64')) == 'float64'
         assert K.dtype(K.variable(1, dtype='float32')) == 'float32'
-    #    assert K.dtype(K.variable(1, dtype='float16')) == 'float16'
-    #
+        assert K.dtype(K.variable(1, dtype='float16')) == 'float16'
+
     def test_variable_support_bool_dtype(self):
         # Github issue: 7819
         if K.backend() == 'tensorflow':
@@ -2089,18 +2091,18 @@ class TestBackend(object):
             assert K.dtype(K.variable(False, dtype='bool')) == 'bool'
             with pytest.raises(TypeError):
                 K.variable('', dtype='unsupported')
-    #
-    #@pytest.mark.parametrize('shape', [(4, 2), (2, 3)])
-    #def test_clip_supports_tensor_arguments(self, shape):
-    #    # GitHub issue: 11435
-    #    _, x = parse_shape_or_val(shape)
-    #    _, min_val = parse_shape_or_val(shape)
-    #    max_val = min_val + 1.
-    #    x_k = K.variable(x)
-    #    min_val_k = K.variable(min_val)
-    #    max_val_k = K.variable(max_val)
-    #    assert np.allclose(K.eval(K.clip(x_k, min_val_k, max_val_k)),
-    #                       KNP.eval(KNP.clip(x, min_val, max_val)))
+
+    @pytest.mark.parametrize('shape', [(4, 2), (2, 3)])
+    def test_clip_supports_tensor_arguments(self, shape):
+        # GitHub issue: 11435
+        _, x = parse_shape_or_val(shape)
+        _, min_val = parse_shape_or_val(shape)
+        max_val = min_val + 1.
+        x_k = K.variable(x)
+        min_val_k = K.variable(min_val)
+        max_val_k = K.variable(max_val)
+        assert np.allclose(K.eval(K.clip(x_k, min_val_k, max_val_k)),
+                           KNP.eval(KNP.clip(x, min_val, max_val)))
 
     @pytest.mark.skipif(K.backend() != 'tensorflow',
                         reason='This test is for tensorflow parallelism.')

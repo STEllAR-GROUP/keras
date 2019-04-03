@@ -2,9 +2,9 @@ from .load_backend import epsilon
 from .load_backend import set_epsilon
 from .load_backend import floatx
 from .load_backend import set_floatx
-#from .load_backend import cast_to_floatx
-#from .load_backend import image_data_format
-#from .load_backend import set_image_data_format
+from .load_backend import cast_to_floatx
+from .load_backend import image_data_format
+from .load_backend import set_image_data_format
 #from .load_backend import reset_uids
 #from .load_backend import get_uid
 from .load_backend import learning_phase
@@ -94,7 +94,7 @@ from .load_backend import temporal_padding
 from .load_backend import stack
 from .load_backend import one_hot
 from .load_backend import reverse
-#from .load_backend import slice
+from .load_backend import slice
 from .load_backend import get_value
 #from .load_backend import batch_get_value
 #from .load_backend import set_value
