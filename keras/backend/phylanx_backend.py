@@ -17,8 +17,12 @@ def variable(value, dtype=None, name=None, constraint=None):
 	if constraint is not None:
 		raise TypeError("Constraint is the projection function to be "
 						"applied to the variable after an optimizer update")
-	return execution_tree.variable(np.array(value, dtype=dtype),
-								dtype=dtype, name=name)
+	from phylanx.ast.physl import PhySL
+	if isinstance(value, PhySL.eval_wrapper):
+		return execution_tree.variable(value.code(), dtype)
+	if isinstance(value, execution_tree.variable):
+		return value
+	return execution_tree.variable(value, dtype=dtype, name=name)
 
 
 def eval(x):
@@ -46,7 +50,7 @@ def ndim(x):
 
 @Phylanx
 def eye_eager(n, m, dtype, name):
-	return np.eye(n, m)
+	return np.eye(n, m, dtype=dtype)
 
 def eye(size, dtype=None, name=None):
 	if isinstance(size, (list, tuple)):
@@ -584,12 +588,15 @@ def softmax(x, axis=-1):
 	return softmax_eager.lazy(x, axis)
 
 
-#@Phylanx
-#def categorical_crossentropy_eager(target, output, from_logits, axis):
-#	return categorical_crossentropy(target, output, from_logits)
+@Phylanx
+def categorical_crossentropy_eager(target, output, from_logits, axis):
+	return categorical_crossentropy(target, output, from_logits, axis)[0]
 
-#def categorical_crossentropy(target, output, from_logits=False, axis=-1):
-#	return categorical_crossentropy_eager.lazy(target, output, from_logits, axis)
+def categorical_crossentropy(target, output, from_logits=False, axis=-1):
+	return categorical_crossentropy_eager.lazy(target, output, from_logits, axis)
+
+def sparse_categorical_crossentropy(target, output, from_logits=False, axis=-1):
+	return categorical_crossentropy_eager.lazy(target, output, from_logits, axis)
 
 
 @Phylanx
@@ -717,13 +724,12 @@ def constant(value, dtype=None, shape=None, name=None):
 	return constant_eager.lazy(value, dtype, shape)
 
 
- #dtype problem
 @Phylanx
 def arange_eager(start, stop, step, dtype):
-	return np.arange(start, stop, step)
+	return np.arange(start, stop=stop, step=step, dtype=dtype)
 
 def arange(start, stop=None, step=1, dtype='int32'):
-	return arange_eager.lazy(start, stop, step, dtype)
+	return variable(arange_eager.lazy(start, stop, step, dtype),dtype=dtype)
 
 
 #returns a list and asserted with a tuple
@@ -734,12 +740,18 @@ def _int_shape(x):
 def int_shape(x):
 	return tuple(_int_shape(x))
 
+def shape(x):
+	return tuple(_int_shape(x))
+
 def get_variable_shape(x):
 	return int_shape(x)
 
 def get_value(x):
 	return eval(x)
 
+def print_tensor(x, message=''):
+	print(eval(x), message)
+	return x
 
 @Phylanx
 def count_params(x):
@@ -747,7 +759,12 @@ def count_params(x):
 
 
 def dtype(x):
-	return execution_tree.variable(x).dtype
+	from phylanx.ast.physl import PhySL
+	if isinstance(x, PhySL.eval_wrapper):
+		return execution_tree.variable(x.code(), dtype).dtype
+	if isinstance(x, execution_tree.variable):
+		return x.dtype
+	return execution_tree.variable(x, dtype).dtype
 
 
 #@Phylanx
@@ -775,4 +792,9 @@ def dtype(x):
 #		return z
 
 
+def is_sparse(tensor):
+	raise TypeError("sparse tensors are not supported by this version of Phylanx")
 
+
+def to_dense(tensor):
+	return tensor

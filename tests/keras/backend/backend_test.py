@@ -480,11 +480,11 @@ class TestBackend(object):
         else:
             assert_list_pairwise(v_list, shape=False, allclose=False, itself=True)
 
-    #def test_print_tensor(self):
-    #    check_single_tensor_operation('print_tensor', (), WITH_NP)
-    #    check_single_tensor_operation('print_tensor', (2,), WITH_NP)
-    #    check_single_tensor_operation('print_tensor', (4, 3), WITH_NP)
-    #    check_single_tensor_operation('print_tensor', (1, 2, 3), WITH_NP)
+    def test_print_tensor(self):
+        check_single_tensor_operation('print_tensor', (), WITH_NP)
+        check_single_tensor_operation('print_tensor', (2,), WITH_NP)
+        check_single_tensor_operation('print_tensor', (4, 3), WITH_NP)
+        check_single_tensor_operation('print_tensor', (1, 2, 3), WITH_NP)
 
     def test_elementwise_operations(self):
         check_single_tensor_operation('max', (4, 2), WITH_NP)
@@ -1119,26 +1119,26 @@ class TestBackend(object):
         check_single_tensor_operation('l2_normalize', (4, 3), WITH_NP, axis=-1)
         check_single_tensor_operation('l2_normalize', (4, 3), WITH_NP, axis=1)
 
-    #def test_crossentropy(self):
-    #    # toy label matrix (4 samples, 2 classes)
-    #    label = np.array([[.4, .6], [.3, .7], [.1, .9], [.2, .8]], dtype=np.float32)
-    #    check_two_tensor_operation('binary_crossentropy', label, (4, 2), WITH_NP)
-    #    check_two_tensor_operation('binary_crossentropy', label, (4, 2),
-    #                               WITH_NP, from_logits=True)
-    #    check_two_tensor_operation('categorical_crossentropy', label, (4, 2),
-    #                               WITH_NP, cntk_two_dynamicity=True)
-    #    check_two_tensor_operation('categorical_crossentropy', label, (4, 2),
-    #                               WITH_NP, cntk_two_dynamicity=True,
-    #                               from_logits=True)
-    #
-    #    # toy label matrix (2 samples, 3 classes)
-    #    label = np.array([[.4, .1, .5], [.2, .6, .2]], dtype=np.float32)
-    #    check_two_tensor_operation('categorical_crossentropy', label, (2, 3),
-    #                               WITH_NP, cntk_two_dynamicity=True)
-    #    check_two_tensor_operation('categorical_crossentropy', label, (2, 3),
-    #                               WITH_NP, cntk_two_dynamicity=True,
-    #                               from_logits=True)
-    #
+    def test_crossentropy(self):
+        # toy label matrix (4 samples, 2 classes)
+        label = np.array([[.4, .6], [.3, .7], [.1, .9], [.2, .8]], dtype=np.float32)
+        #check_two_tensor_operation('binary_crossentropy', label, (4, 2), WITH_NP)
+        #check_two_tensor_operation('binary_crossentropy', label, (4, 2),
+        #                           WITH_NP, from_logits=True)
+        check_two_tensor_operation('categorical_crossentropy', label, (4, 2),
+                                   WITH_NP, cntk_two_dynamicity=True)
+        check_two_tensor_operation('categorical_crossentropy', label, (4, 2),
+                                   WITH_NP, cntk_two_dynamicity=True,
+                                   from_logits=True)
+
+        # toy label matrix (2 samples, 3 classes)
+        label = np.array([[.4, .1, .5], [.2, .6, .2]], dtype=np.float32)
+        check_two_tensor_operation('categorical_crossentropy', label, (2, 3),
+                                   WITH_NP, cntk_two_dynamicity=True)
+        check_two_tensor_operation('categorical_crossentropy', label, (2, 3),
+                                   WITH_NP, cntk_two_dynamicity=True,
+                                   from_logits=True)
+
 
     #def test_in_top_k(self):
     #    batch_size = 20
@@ -1170,7 +1170,7 @@ class TestBackend(object):
     #                                    b.variable(targets, dtype='int32'), k))
     #                  for b in WITH_NP]
     #        assert_list_pairwise(z_list)
-    #
+
     #@pytest.mark.parametrize('op,input_shape,kernel_shape,padding,data_format', [
     #    ('conv1d', (2, 8, 2), (3, 2, 3), 'same', 'channels_last'),
     #    ('conv1d', (1, 8, 2), (3, 2, 3), 'valid', 'channels_last'),
@@ -1189,7 +1189,7 @@ class TestBackend(object):
     #        op, input_shape, kernel_shape, WITH_NP,
     #        padding=padding, data_format=data_format,
     #        cntk_dynamicity=True)
-    #
+
     #@pytest.mark.parametrize(
     #    'op,input_shape,kernel_shape,output_shape,padding,data_format', [
     #        ('conv2d_transpose', (2, 5, 6, 3), (3, 3, 2, 3), (2, 5, 6, 2),
@@ -1208,7 +1208,7 @@ class TestBackend(object):
     #        op, input_shape, kernel_shape, WITH_NP,
     #        output_shape=output_shape, padding=padding, data_format=data_format,
     #        cntk_dynamicity=True)
-    #
+
     #@pytest.mark.skipif((K.backend() == 'cntk' and KC.dev.type() == 0),
     #                    reason='cntk only supports dilated conv on GPU')
     #@pytest.mark.parametrize(
@@ -1235,7 +1235,7 @@ class TestBackend(object):
     #        op, input_shape, kernel_shape, WITH_NP,
     #        padding=padding, data_format=data_format,
     #        dilation_rate=dilation_rate, cntk_dynamicity=True)
-    #
+
     #@pytest.mark.skipif((K.backend() == 'cntk' and KC.dev.type() == 0),
     #                    reason='cntk only supports dilated conv transpose on GPU')
     #@pytest.mark.parametrize(
@@ -1258,7 +1258,7 @@ class TestBackend(object):
     #        op, input_shape, kernel_shape, WITH_NP, output_shape=output_shape,
     #        padding=padding, data_format=data_format, dilation_rate=dilation_rate,
     #        cntk_dynamicity=True)
-    #
+
     #@pytest.mark.parametrize('op,input_shape,kernel_shape,padding,data_format', [
     #    ('depthwise_conv2d', (2, 3, 4, 5), (3, 3, 3, 2), 'same', 'channels_first'),
     #    ('depthwise_conv2d', (2, 3, 5, 6), (4, 3, 3, 4), 'valid', 'channels_first'),
@@ -1275,7 +1275,7 @@ class TestBackend(object):
     #        op, input_shape, kernel_shape, WITH_NP,
     #        padding=padding, data_format=data_format,
     #        cntk_dynamicity=True)
-    #
+
     #@pytest.mark.parametrize(
     #    'op,input_shape,pool_size,strides,padding,data_format,pool_mode', [
             #('pool2d', (2, 3, 7, 7), (3, 3), (1, 1),
@@ -1308,7 +1308,7 @@ class TestBackend(object):
     #        pool_size=pool_size, strides=strides,
     #        padding=padding, data_format=data_format, pool_mode=pool_mode,
     #        cntk_dynamicity=True)
-    #
+
     #@pytest.mark.parametrize(
     #    'op,input_shape,kernel_shape,depth_multiplier,padding,data_format', [
     #        ('separable_conv1d', (2, 8, 2), (3,), 1, 'same', 'channels_last'),
@@ -1572,7 +1572,7 @@ class TestBackend(object):
     #    with pytest.raises(ValueError):
     #        K.spatial_3d_padding(K.variable(xval), padding=padding,
     #                             data_format='channels_middle')
-    #
+
     #def test_bias_add(self):
     #    for data_format in ['channels_first', 'channels_last']:
     #        for shape in [(), (3,), (2, 3), (5, 3, 2)]:
@@ -1994,10 +1994,10 @@ class TestBackend(object):
     #            assert np.array_equal(a, np.arange(test_value))
     #            dtype_list.append(k.dtype(t))
     #            a_list.append(a)
-    #
+
     #        for i in range(len(a_list) - 1):
     #            assert np.array_equal(a_list[i], a_list[i + 1])
-    #
+
     #    for start, stop, step in ((0, 5, 1), (-5, 5, 2), (0, 1, 2)):
     #        a_list = []
     #        for k in WITH_NP:
@@ -2006,16 +2006,16 @@ class TestBackend(object):
     #            a_list.append(a)
     #        for i in range(len(a_list) - 1):
     #            assert np.array_equal(a_list[i], a_list[i + 1])
-    #
+
     #    for dtype in ('int32', 'int64', 'float32', 'float64'):
     #        for k in WITH_NP:
     #            t = k.arange(10, dtype=dtype)
     #            assert k.dtype(t) == dtype
-    #
+
     #    start = K.constant(1, dtype='int32')
     #    t = K.arange(start)
     #    assert len(K.eval(t)) == 1
-    #
+
     #    start = K.constant(-1, dtype='int32')
     #    t = K.arange(start)
     #    assert len(K.eval(t)) == 0
