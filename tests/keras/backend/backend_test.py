@@ -1755,19 +1755,19 @@ class TestBackend(object):
     #    assert np.alltrue(decode_pred_np == decode_pred)
     #    assert np.allclose(log_prob_pred_np, log_prob_pred)
 
-    @pytest.mark.parametrize('shape,start,size', [
-        ((2, 5), (0, 1), (2, 3)),
-        ((2, 5), (1, 0), (1, 4)),
-        ((3, 2, 3), (1, 1, 0), (1, 1, 3)),
-        ((3, 2, 3), (1, 0, 0), (1, 2, 3)),
-        ((3, 2, 3), (1, 0, 0), (2, 1, 3)),
-    ])
-    def test_slice(self, shape, start, size):
-        check_single_tensor_operation('slice', shape, WITH_NP,
-                                      start=start, size=size)
-        with pytest.raises(ValueError):
-            K.slice(K.variable(np.random.random(shape)),
-                    start=[1, 0, 0, 0], size=size)
+    #@pytest.mark.parametrize('shape,start,size', [
+    #    ((2, 5), (0, 1), (2, 3)),
+    #    ((2, 5), (1, 0), (1, 4)),
+    #    ((3, 2, 3), (1, 1, 0), (1, 1, 3)),
+    #    ((3, 2, 3), (1, 0, 0), (1, 2, 3)),
+    #    ((3, 2, 3), (1, 0, 0), (2, 1, 3)),
+    #])
+    #def test_slice(self, shape, start, size):
+    #    check_single_tensor_operation('slice', shape, WITH_NP,
+    #                                  start=start, size=size)
+    #    with pytest.raises(ValueError):
+    #        K.slice(K.variable(np.random.random(shape)),
+    #                start=[1, 0, 0, 0], size=size)
 
     @pytest.mark.skipif(K.backend() != 'tensorflow',
                         reason='Beam search is only implemented with '
@@ -2081,11 +2081,11 @@ class TestBackend(object):
         assert K.dtype(K.variable(1, dtype='float32')) == 'float32'
         assert K.dtype(K.variable(1, dtype='float16')) == 'float16'
 
-    def test_variable_support_bool_dtype(self):
-        assert K.dtype(K.variable(1, dtype='int16')) == 'int16'
-        assert K.dtype(K.variable(False, dtype='bool')) == 'bool'
-        with pytest.raises(TypeError):
-            K.variable('', dtype='unsupported')
+    #def test_variable_support_bool_dtype(self):
+    #    assert K.dtype(K.variable(1, dtype='int16')) == 'int16'
+    #    assert K.dtype(K.variable(False, dtype='bool')) == 'bool'
+    #    with pytest.raises(TypeError):
+    #        K.variable('', dtype='unsupported')
 
     @pytest.mark.parametrize('shape', [(4, 2), (2, 3)])
     def test_clip_supports_tensor_arguments(self, shape):

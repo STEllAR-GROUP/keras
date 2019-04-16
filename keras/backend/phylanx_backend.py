@@ -849,7 +849,8 @@ def to_dense(tensor):
 
 
 @Phylanx
-def ctc_decode_eager(y_pred, input_length, greedy=True, beam_width=100, top_paths=1):
+def ctc_decode_eager(y_pred, input_length, greedy=True, beam_width=100,
+					 top_paths=1):
 	return ctc_decode(y_pred, input_length, greedy, beam_width, top_paths)
 
 def ctc_decode(y_pred, input_length, greedy=True, beam_width=100,
