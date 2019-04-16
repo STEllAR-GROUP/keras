@@ -105,8 +105,8 @@ from .load_backend import print_tensor
 #from .load_backend import stop_gradient
 #from .load_backend import rnn
 from .load_backend import switch
-#from .load_backend import in_train_phase
-#from .load_backend import in_test_phase
+from .load_backend import in_train_phase
+from .load_backend import in_test_phase
 from .load_backend import relu
 from .load_backend import elu
 from .load_backend import softmax

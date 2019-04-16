@@ -828,24 +828,21 @@ def to_dense(tensor):
 	return tensor
 
 
-#def in_train_phase(x, alt, training=None):
-#	if training is None:
-#		training = learning_phase()
+@Phylanx
+def in_train_phase_eager(x, alt, training=None):
+	if training == 1 or training == True:
+		return x()
+	else:
+		return alt()
 
-#	if training is 1 or training is True:
-#		if callable(x):
-#			return x()
-#		else:
-#			return x
-#	elif training is 0 or training is False:
-#		if callable(alt):
-#			return alt()
-#		else:
-#			return alt
-#	# else: assume learning phase is a placeholder tensor.
 
-#def in_test_phase(x, alt, training=None):
-#	return in_train_phase(alt, x, training=training)
+def in_train_phase(x, alt, training=None):
+	if training is None:
+		training = learning_phase()
+	return in_train_phase_eager.lazy(x, alt, training)
+
+def in_test_phase(x, alt, training=None):
+	return in_train_phase(alt, x, training=training)
 
 
 @Phylanx

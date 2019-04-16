@@ -2057,19 +2057,19 @@ class TestBackend(object):
     #    t = K.arange(start)
     #    assert len(K.eval(t)) == 0
 
-    #@pytest.mark.parametrize('training', [True, False])
-    #def test_in_train_phase(self, training):
-    #    check_two_tensor_operation('in_train_phase', (3, 3), (2, 2), WITH_NP,
-    #                               training=training)
-    #    check_two_tensor_operation('in_train_phase', (2, 3), (2, 3), WITH_NP,
-    #                               training=training)
+    @pytest.mark.parametrize('training', [True, False])
+    def test_in_train_phase(self, training):
+        check_two_tensor_operation('in_train_phase', (3, 3), (2, 2), WITH_NP,
+                                   training=training)
+        check_two_tensor_operation('in_train_phase', (2, 3), (2, 3), WITH_NP,
+                                   training=training)
 
-    #@pytest.mark.parametrize('training', [True, False])
-    #def test_in_test_phase(self, training):
-    #    check_two_tensor_operation('in_test_phase', (3, 3), (2, 2), WITH_NP,
-    #                               training=training)
-    #    check_two_tensor_operation('in_test_phase', (2, 3), (2, 3), WITH_NP,
-    #                               training=training)
+    @pytest.mark.parametrize('training', [True, False])
+    def test_in_test_phase(self, training):
+        check_two_tensor_operation('in_test_phase', (3, 3), (2, 2), WITH_NP,
+                                   training=training)
+        check_two_tensor_operation('in_test_phase', (2, 3), (2, 3), WITH_NP,
+                                   training=training)
 
     @pytest.mark.parametrize('dtype', ['', 'beerfloat', 123])
     def test_setfloatx_incorrect_values(self, dtype):
@@ -2078,7 +2078,7 @@ class TestBackend(object):
         with pytest.raises(ValueError):
             K.set_floatx(dtype)
         assert K.floatx() == old_floatx
-    #
+
     @pytest.mark.parametrize('dtype', ['float16', 'float32', 'float64'])
     def test_setfloatx_correct_values(self, dtype):
         # Keep track of the old value
