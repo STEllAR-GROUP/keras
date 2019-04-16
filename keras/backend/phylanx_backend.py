@@ -5,22 +5,38 @@ from __future__ import print_function
 
 import numpy as np
 from phylanx import Phylanx, PhylanxSession, execution_tree
-from .common import floatx, set_floatx
-from .common import epsilon, set_epsilon
-from .common import normalize_data_format
+from .common import floatx
+from .common import epsilon
 
 PhylanxSession.init(1)
 
 
 def variable(value, dtype=None, name=None, constraint=None):
+	if dtype is None:
+		dtype = floatx()
 	if constraint is not None:
 		raise TypeError("Constraint is the projection function to be "
 						"applied to the variable after an optimizer update")
-	return execution_tree.var(np.array(value, dtype))
+	from phylanx.ast.physl import PhySL
+	if isinstance(value, PhySL.eval_wrapper):
+		return execution_tree.variable(value.code(), dtype)
+	if isinstance(value, execution_tree.variable):
+		return value
+	return execution_tree.variable(value, dtype=dtype, name=name)
 
 
 def eval(x):
 	return x.eval()
+
+_LEARNING_PHASE = True
+
+def learning_phase():
+	return _LEARNING_PHASE
+
+
+def set_learning_phase(value):
+	global _LEARNING_PHASE
+	_LEARNING_PHASE = value
 
 
 # not tested in the backend, should work on both variables and placeholders
@@ -32,49 +48,51 @@ def ndim(x):
 	return ndim_eager.lazy(x)
 
 
-
-
 @Phylanx
-def eye_eager(size, dtype, name):
-	return np.eye(size)
+def eye_eager(n, m, dtype="float64", name=None):
+	return np.eye(n, m, dtype=dtype)
 
 def eye(size, dtype=None, name=None):
-	return eye_eager.lazy(size)
+	if isinstance(size, (list, tuple)):
+		n, m = size
+	else:
+		n, m = size, size
+	return variable(eye_eager.lazy(n, m, dtype))
 
 
 # 4d
 @Phylanx
-def ones_eager(shape, dtype, name):
-	return np.ones(shape)
+def ones_eager(shape, dtype=None, name=None):
+	return np.ones(shape, dtype=dtype)
 
-def ones(shape, dtype=floatx(), name=None):
-	return ones_eager.lazy(shape)
-
-
-# 4d
-@Phylanx
-def zeros_eager(shape, dtype, name):
-	return np.zeros(shape)
-
-def zeros(shape, dtype=floatx(), name=None):
-	return zeros_eager.lazy(shape)
+def ones(shape, dtype=None, name=None):
+	return ones_eager.lazy(shape, dtype)
 
 
 # 4d
 @Phylanx
-def ones_like_eager(x, dtype, name):
-	return np.ones_like(x)
+def zeros_eager(shape, dtype=None, name=None):
+	return np.zeros(shape, dtype=dtype)
 
-def ones_like(x, dtype=floatx(), name=None):
+def zeros(shape, dtype=None, name=None):
+	return zeros_eager.lazy(shape, dtype)
+
+
+# 4d
+@Phylanx
+def ones_like_eager(x, dtype=None, name=None):
+	return np.ones_like(x, dtype=dtype)
+
+def ones_like(x, dtype=None, name=None):
 	return ones_like_eager.lazy(x)
 
 
 # 4d
 @Phylanx
-def zeros_like_eager(x, dtype, name):
-	return np.zeros_like(x)
+def zeros_like_eager(x, dtype=None, name=None):
+	return np.zeros_like(x, dtype=dtype)
 
-def zeros_like(x, dtype=floatx(), name=None):
+def zeros_like(x, dtype=None, name=None):
 	return zeros_like_eager.lazy(x)
 
 
@@ -86,7 +104,12 @@ def dot(x, y):
 	return dot_eager.lazy(x, y)
 
 
+@Phylanx
+def batch_dot_eager(x, y, axes):
+	return batch_dot(x, y, axes)
 
+def batch_dot(x, y, axes=None):
+	return batch_dot_eager.lazy(x, y, axes)
 
 
 @Phylanx
@@ -110,7 +133,7 @@ def phylanx_random_uniform_variable(shape, low, high):
 	return random(shape, ["uniform", low, high])
 
 def random_uniform_variable(shape, low, high, dtype=None, name=None, seed=None):
-	return execution_tree.var(phylanx_random_uniform_variable(shape, low, high))
+	return execution_tree.variable(phylanx_random_uniform_variable(shape, low, high))
 
 
 @Phylanx
@@ -118,7 +141,7 @@ def phylanx_random_normal_variable(shape, mean, scale):
 	return random(shape, ["normal", mean, scale])
 
 def random_normal_variable(shape, mean, scale, dtype=None, name=None, seed=None):
-	return execution_tree.var(phylanx_random_normal_variable(shape, mean, scale))
+	return execution_tree.variable(phylanx_random_normal_variable(shape, mean, scale))
 
 
 @Phylanx
@@ -164,7 +187,7 @@ def flatten(x):
 
 @Phylanx
 def batch_flatten_eager(x):
-	return np.reshape(x, list(shape(x)[0], -1))
+	return np.reshape(x, [shape(x)[0], -1])
 
 def batch_flatten(x):
 	return batch_flatten_eager.lazy(x)
@@ -465,17 +488,49 @@ def log(x):
 	return log_eager.lazy(x)
 
 
-#@Phylanx
-#def relu_eager(x, alpha, max_value, threshold):
-#	return relu(x, alpha, max_value, threshold)
+@Phylanx
+def switch_eager(condition, then_expression, else_expression):
+	return switch(condition,then_expression, else_expression)
 
-#def relu(x, alpha=0.0, max_value=None, threshold=0.0):
-#	return relu_eager.lazy(x, alpha, max_value, threshold)
+def switch(condition, then_expression, else_expression):
+	return switch_eager.lazy(condition, then_expression, else_expression)
+
+
+@Phylanx
+def _dropout(x, level, noise_shape, seed):
+	if seed:
+		set_seed(seed)
+	noise = random(noise_shape if noise_shape else shape(x), ["bernoulli", 1 - level])
+	return x * noise / (1 - level)
+
+@Phylanx
+def _no_dropout(x):
+	return x
+
+def dropout_eager(x, level, noise_shape, seed):
+	if learning_phase():
+		return _dropout.lazy(x, level, noise_shape, seed)
+
+	# dropout is not considered outside the learning phase
+	return _no_dropout.lazy(x)
+
+def dropout(x, level, noise_shape=None, seed=None):
+	if level < 0:
+		raise ValueError("the level for dropout should be non-negative")
+	return dropout_eager(x, level, noise_shape, seed)
+
+
+@Phylanx
+def relu_eager(x, alpha, max_value, threshold):
+	return relu(x, alpha, max_value, threshold)
+
+def relu(x, alpha=0.0, max_value=None, threshold=0.0):
+	return relu_eager.lazy(x, alpha, max_value, threshold)
 
 
 @Phylanx
 def softsign_eager(x):
-	return x / (1 + absolute(x))
+	return softsign(x)
 
 def softsign(x):
 	return softsign_eager.lazy(x)
@@ -491,7 +546,7 @@ def softplus(x):
 
 @Phylanx
 def elu_eager(x, alpha):
-	return x * (x > 0) + alpha * (np.exp(x) - 1.) * (x < 0)
+	return elu(x, alpha)
 
 def elu(x, alpha=1.):
 	return elu_eager.lazy(x, alpha)
@@ -499,7 +554,7 @@ def elu(x, alpha=1.):
 
 @Phylanx
 def sigmoid_eager(x):
-	return 1. / (1. + np.exp(-x))
+	return sigmoid(x)
 
 def sigmoid(x):
 	return sigmoid_eager.lazy(x)
@@ -507,8 +562,7 @@ def sigmoid(x):
 
 @Phylanx
 def hard_sigmoid_eager(x):
-	y = 0.2 * x + 0.5
-	return np.clip(y, 0, 1)
+	return hard_sigmoid(x)
 
 def hard_sigmoid(x):
 	return hard_sigmoid_eager.lazy(x)
@@ -529,6 +583,33 @@ def softmax_eager(x, axis):
 
 def softmax(x, axis=-1):
 	return softmax_eager.lazy(x, axis)
+
+
+@Phylanx
+def categorical_crossentropy_eager(target, output, from_logits, axis):
+	return categorical_crossentropy(target, output, from_logits, axis)[0]
+
+def categorical_crossentropy(target, output, from_logits=False, axis=-1):
+	return categorical_crossentropy_eager.lazy(target, output, from_logits, axis)
+
+
+@Phylanx
+def binary_crossentropy_eager(target, output, from_logits):
+	return binary_crossentropy(target, output, from_logits)[0]
+
+def binary_crossentropy(target, output, from_logits=False):
+	return binary_crossentropy_eager.lazy(target, output, from_logits)
+
+#def sparse_categorical_crossentropy(target, output, from_logits=False, axis=-1):
+#	return categorical_crossentropy_eager.lazy(target, output, from_logits, axis)
+
+
+@Phylanx
+def l2_normalize_eager(x, axis):
+	return l2_normalize(x, axis)
+
+def l2_normalize(x, axis=None):
+	return l2_normalize_eager.lazy(x, axis)
 
 
 @Phylanx
@@ -604,6 +685,17 @@ def temporal_padding(x, padding=(1, 1)):
 
 
 @Phylanx
+def slice_eager(x, start, size):
+	indices = [[i, i+j] for i, j in zip(start, size)]
+	return tuple_slice(x, indices)
+
+def slice(x, start, size):
+	if len(start) != len(size):
+		raise ValueError("start and size arguments should have the same shape")
+	return slice_eager.lazy(x, start, size)
+
+
+@Phylanx
 def one_hot_eager(indices, num_classes):
 	return one_hot(indices, num_classes)
 
@@ -620,13 +712,36 @@ def sum(x, axis=None, keepdims=False):
 	return sum_eager.lazy(x, axis, keepdims)
 
 
-# concat_args true
-#@Phylanx
-#def stack_eager(x, axis):
-#    return np.stack(x, axis=axis)
+# 4d, 5d
+@Phylanx
+def stack_eager(x, axis):
+	return np.stack(x, axis=axis)
 
-#def stack(x, axis=0):
-#    return stack_eager.lazy(x, axis)
+def stack(x, axis=0):
+	return stack_eager.lazy(x, axis)
+
+
+@Phylanx
+def map_fn_eager(fn, elems):
+	return fmap(fn, elems)
+
+def map_fn(fn, elems, dtype=None):
+	return variable(map_fn_eager(fn, elems),dtype=dtype)
+
+@Phylanx
+def foldl_eager(fn, elems, initializer, name):
+	return fold_left(fn, initializer, elems)
+
+def foldl(fn, elems, initializer=None, name=None):
+	return foldl_eager.lazy(fn, elems, initializer, name)
+
+
+@Phylanx
+def foldr_eager(fn, elems, initializer, name):
+	return fold_right(fn, initializer, elems)
+
+def foldr(fn, elems, initializer=None, name=None):
+	return foldr_eager.lazy(fn, elems, initializer, name)
 
 
 @Phylanx
@@ -637,13 +752,12 @@ def constant(value, dtype=None, shape=None, name=None):
 	return constant_eager.lazy(value, dtype, shape)
 
 
-# dtype problem
-#@Phylanx
-#def arange_eager(start, stop, step, dtype):
-#	return np.arange(start, stop, step)
+@Phylanx
+def arange_eager(start, stop, step, dtype):
+	return np.arange(start, stop=stop, step=step, dtype=dtype)
 
-#def arange(start, stop=None, step=1, dtype='int32'):
-#	return arange_eager.lazy(start, stop, step, dtype)
+def arange(start, stop=None, step=1, dtype='int32'):
+	return variable(arange_eager.lazy(start, stop, step, dtype),dtype=dtype)
 
 
 #returns a list and asserted with a tuple
@@ -654,10 +768,90 @@ def _int_shape(x):
 def int_shape(x):
 	return tuple(_int_shape(x))
 
+def shape(x):
+	return tuple(_int_shape(x))
+
+def get_variable_shape(x):
+	return int_shape(x)
+
 def get_value(x):
 	return eval(x)
 
+def print_tensor(x, message=''):
+	print(eval(x), message)
+	return x
 
 @Phylanx
 def count_params(x):
 	return np.size(x)
+
+
+def dtype(x):
+	from phylanx.ast.physl import PhySL
+	if isinstance(x, PhySL.eval_wrapper):
+		return execution_tree.variable(x.code(), dtype).dtype
+	if isinstance(x, execution_tree.variable):
+		return x.dtype
+	return execution_tree.variable(x, dtype).dtype
+
+
+#@Phylanx
+#def max_pool_eager(x, pool_size, strides, padding):
+#	return max_pool(x, pool_size, padding, strides)
+
+#def pool2d(x, pool_size, strides=(1, 1), padding='valid',
+#		   data_format=None, pool_mode='max'):
+#	#if data_format == 'channels_last':
+#	#	if x.ndim == 4:
+#	#		x = np.transpose(x, (0, 3, 1, 2))
+#	#	else:
+#	#		raise IndexError("Constraint is the projection function to be "
+#	#					"applied to the variable after an optimizer update")
+
+#	if pool_mode == "max":
+#		z = []
+#		for fourth in range(3):
+#			y = []
+#			for third in range(3):
+#				y.append(max_pool_eager.lazy(x[fourth,third,:,:], pool_size, strides, padding))
+#			y = np.stack(y, axis=0)
+#			z.append(y)
+#		z = np.stack(z,axis=0)
+#		return z
+
+
+def is_sparse(tensor):
+	raise TypeError("sparse tensors are not supported by this version of Phylanx")
+
+
+def to_dense(tensor):
+	return tensor
+
+
+#def in_train_phase(x, alt, training=None):
+#	if training is None:
+#		training = learning_phase()
+
+#	if training is 1 or training is True:
+#		if callable(x):
+#			return x()
+#		else:
+#			return x
+#	elif training is 0 or training is False:
+#		if callable(alt):
+#			return alt()
+#		else:
+#			return alt
+#	# else: assume learning phase is a placeholder tensor.
+
+#def in_test_phase(x, alt, training=None):
+#	return in_train_phase(alt, x, training=training)
+
+
+@Phylanx
+def ctc_decode_eager(y_pred, input_length, greedy=True, beam_width=100, top_paths=1):
+	return ctc_decode(y_pred, input_length, greedy, beam_width, top_paths)
+
+def ctc_decode(y_pred, input_length, greedy=True, beam_width=100,
+			   top_paths=1, merge_repeated=False):
+	return ctc_decode_eager(y_pred, input_length, greedy, beam_width, top_paths)
