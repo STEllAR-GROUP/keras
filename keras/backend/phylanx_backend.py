@@ -49,7 +49,7 @@ def ndim(x):
 
 
 @Phylanx
-def eye_eager(n, m, dtype, name):
+def eye_eager(n, m, dtype="float64", name=None):
 	return np.eye(n, m, dtype=dtype)
 
 def eye(size, dtype=None, name=None):
@@ -57,42 +57,42 @@ def eye(size, dtype=None, name=None):
 		n, m = size
 	else:
 		n, m = size, size
-	return eye_eager.lazy(n, m, dtype)
+	return variable(eye_eager.lazy(n, m, dtype))
 
 
 # 4d
 @Phylanx
-def ones_eager(shape, dtype, name):
-	return np.ones(shape)
+def ones_eager(shape, dtype=None, name=None):
+	return np.ones(shape, dtype=dtype)
 
-def ones(shape, dtype=floatx(), name=None):
-	return ones_eager.lazy(shape)
-
-
-# 4d
-@Phylanx
-def zeros_eager(shape, dtype, name):
-	return np.zeros(shape)
-
-def zeros(shape, dtype=floatx(), name=None):
-	return zeros_eager.lazy(shape)
+def ones(shape, dtype=None, name=None):
+	return ones_eager.lazy(shape, dtype)
 
 
 # 4d
 @Phylanx
-def ones_like_eager(x, dtype, name):
-	return np.ones_like(x)
+def zeros_eager(shape, dtype=None, name=None):
+	return np.zeros(shape, dtype=dtype)
 
-def ones_like(x, dtype=floatx(), name=None):
+def zeros(shape, dtype=None, name=None):
+	return zeros_eager.lazy(shape, dtype)
+
+
+# 4d
+@Phylanx
+def ones_like_eager(x, dtype=None, name=None):
+	return np.ones_like(x, dtype=dtype)
+
+def ones_like(x, dtype=None, name=None):
 	return ones_like_eager.lazy(x)
 
 
 # 4d
 @Phylanx
-def zeros_like_eager(x, dtype, name):
-	return np.zeros_like(x)
+def zeros_like_eager(x, dtype=None, name=None):
+	return np.zeros_like(x, dtype=dtype)
 
-def zeros_like(x, dtype=floatx(), name=None):
+def zeros_like(x, dtype=None, name=None):
 	return zeros_like_eager.lazy(x)
 
 
@@ -488,15 +488,12 @@ def log(x):
 	return log_eager.lazy(x)
 
 
-#@Phylanx
-#def switch_eager(condition, then_expression, else_expression):
-#	return then_expression if condition else else_expression
+@Phylanx
+def switch_eager(condition, then_expression, else_expression):
+	return switch(condition,then_expression, else_expression)
 
-#def switch(condition, then_expression, else_expression):
-#	cond_float = condition.astype(floatx())
-#	while cond_float.ndim < then_expression.ndim:
-#		cond_float = cond_float[..., np.newaxis]
-#	return switch_eager.lazy(cond_float, then_expression, else_expression)
+def switch(condition, then_expression, else_expression):
+	return switch_eager.lazy(condition, then_expression, else_expression)
 
 
 @Phylanx
@@ -595,8 +592,16 @@ def categorical_crossentropy_eager(target, output, from_logits, axis):
 def categorical_crossentropy(target, output, from_logits=False, axis=-1):
 	return categorical_crossentropy_eager.lazy(target, output, from_logits, axis)
 
-def sparse_categorical_crossentropy(target, output, from_logits=False, axis=-1):
-	return categorical_crossentropy_eager.lazy(target, output, from_logits, axis)
+
+@Phylanx
+def binary_crossentropy_eager(target, output, from_logits):
+	return binary_crossentropy(target, output, from_logits)[0]
+
+def binary_crossentropy(target, output, from_logits=False):
+	return binary_crossentropy_eager.lazy(target, output, from_logits)
+
+#def sparse_categorical_crossentropy(target, output, from_logits=False, axis=-1):
+#	return categorical_crossentropy_eager.lazy(target, output, from_logits, axis)
 
 
 @Phylanx
@@ -680,14 +685,14 @@ def temporal_padding(x, padding=(1, 1)):
 
 
 @Phylanx
-def slice_eager(x, indices):
+def slice_eager(x, start, size):
+	indices = [[i, i+j] for i, j in zip(start, size)]
 	return tuple_slice(x, indices)
 
 def slice(x, start, size):
 	if len(start) != len(size):
 		raise ValueError("start and size arguments should have the same shape")
-	indices = [[i, i+j] for i, j in zip(start, size)]
-	return slice_eager.lazy(x, indices)
+	return slice_eager.lazy(x, start, size)
 
 
 @Phylanx
@@ -714,6 +719,29 @@ def stack_eager(x, axis):
 
 def stack(x, axis=0):
 	return stack_eager.lazy(x, axis)
+
+
+@Phylanx
+def map_fn_eager(fn, elems):
+	return fmap(fn, elems)
+
+def map_fn(fn, elems, dtype=None):
+	return variable(map_fn_eager(fn, elems),dtype=dtype)
+
+@Phylanx
+def foldl_eager(fn, elems, initializer, name):
+	return fold_left(fn, initializer, elems)
+
+def foldl(fn, elems, initializer=None, name=None):
+	return foldl_eager.lazy(fn, elems, initializer, name)
+
+
+@Phylanx
+def foldr_eager(fn, elems, initializer, name):
+	return fold_right(fn, initializer, elems)
+
+def foldr(fn, elems, initializer=None, name=None):
+	return foldr_eager.lazy(fn, elems, initializer, name)
 
 
 @Phylanx
@@ -798,3 +826,32 @@ def is_sparse(tensor):
 
 def to_dense(tensor):
 	return tensor
+
+
+#def in_train_phase(x, alt, training=None):
+#	if training is None:
+#		training = learning_phase()
+
+#	if training is 1 or training is True:
+#		if callable(x):
+#			return x()
+#		else:
+#			return x
+#	elif training is 0 or training is False:
+#		if callable(alt):
+#			return alt()
+#		else:
+#			return alt
+#	# else: assume learning phase is a placeholder tensor.
+
+#def in_test_phase(x, alt, training=None):
+#	return in_train_phase(alt, x, training=training)
+
+
+@Phylanx
+def ctc_decode_eager(y_pred, input_length, greedy=True, beam_width=100, top_paths=1):
+	return ctc_decode(y_pred, input_length, greedy, beam_width, top_paths)
+
+def ctc_decode(y_pred, input_length, greedy=True, beam_width=100,
+			   top_paths=1, merge_repeated=False):
+	return ctc_decode_eager(y_pred, input_length, greedy, beam_width, top_paths)

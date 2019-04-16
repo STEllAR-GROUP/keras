@@ -104,7 +104,7 @@ from .load_backend import print_tensor
 #from .load_backend import gradients
 #from .load_backend import stop_gradient
 #from .load_backend import rnn
-#from .load_backend import switch
+from .load_backend import switch
 #from .load_backend import in_train_phase
 #from .load_backend import in_test_phase
 from .load_backend import relu
@@ -113,8 +113,8 @@ from .load_backend import softmax
 from .load_backend import softplus
 from .load_backend import softsign
 from .load_backend import categorical_crossentropy
-from .load_backend import sparse_categorical_crossentropy
-#from .load_backend import binary_crossentropy
+#from .load_backend import sparse_categorical_crossentropy
+from .load_backend import binary_crossentropy
 from .load_backend import sigmoid
 from .load_backend import hard_sigmoid
 from .load_backend import tanh
@@ -138,10 +138,10 @@ from .load_backend import random_binomial
 from .load_backend import truncated_normal
 #from .load_backend import ctc_label_dense_to_sparse
 #from .load_backend import ctc_batch_cost
-#from .load_backend import ctc_decode
-#from .load_backend import map_fn
-#from .load_backend import foldl
-#from .load_backend import foldr
+from .load_backend import ctc_decode
+from .load_backend import map_fn
+from .load_backend import foldl
+from .load_backend import foldr
 #from .load_backend import local_conv1d
 #from .load_backend import local_conv2d
 from .load_backend import backend

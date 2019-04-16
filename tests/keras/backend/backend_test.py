@@ -1042,28 +1042,28 @@ class TestBackend(object):
         result = K.eval(K.logsumexp(K.variable(x_np), axis=0))
         assert_allclose(result, 1e4, rtol=1e-5)
 
-    #def test_switch(self):
-    #    # scalar
-    #    val = np.random.random()
-    #    z_list = []
-    #    for k in WITH_NP:
-    #        x = k.variable(val)
-    #        x = k.switch(k.greater_equal(x, 0.5), x * 0.1, x * 0.2)
-    #        z_list.append(k.eval(x))
-    #    assert_list_pairwise(z_list)
-    #    # non scalar
-    #    shapes = []
-    #    shapes.append([(4, 3, 2), (4, 3, 2), (4, 3, 2)])
-    #    shapes.append([(4, 3,), (4, 3, 2), (4, 3, 2)])
-    #    shapes.append([(4,), (4, 3, 2), (4, 3, 2)])
-    #    for s in shapes:
-    #        z_list = []
-    #        arrays = list(map(np.random.random, s))
-    #        for k in WITH_NP:
-    #            x, then_expr, else_expr = map(k.variable, arrays)
-    #            cond = k.greater_equal(x, 0.5)
-    #            z_list.append(k.eval(k.switch(cond, then_expr, else_expr)))
-    #        assert_list_pairwise(z_list)
+    def test_switch(self):
+        # scalar
+        val = np.random.random()
+        z_list = []
+        for k in WITH_NP:
+            x = k.variable(val)
+            x = k.switch(k.greater_equal(x, 0.5), x * 0.1, x * 0.2)
+            z_list.append(k.eval(x))
+        assert_list_pairwise(z_list)
+        # non scalar
+        shapes = []
+        shapes.append([(4, 3, 2), (4, 3, 2), (4, 3, 2)])
+        shapes.append([(4, 3,), (4, 3, 2), (4, 3, 2)])
+        shapes.append([(4,), (4, 3, 2), (4, 3, 2)])
+        for s in shapes:
+            z_list = []
+            arrays = list(map(np.random.random, s))
+            for k in WITH_NP:
+                x, then_expr, else_expr = map(k.variable, arrays)
+                cond = k.greater_equal(x, 0.5)
+                z_list.append(k.eval(k.switch(cond, then_expr, else_expr)))
+            assert_list_pairwise(z_list)
 
     def test_dropout(self):
         val = np.random.random((100, 100))
@@ -1122,9 +1122,9 @@ class TestBackend(object):
     def test_crossentropy(self):
         # toy label matrix (4 samples, 2 classes)
         label = np.array([[.4, .6], [.3, .7], [.1, .9], [.2, .8]], dtype=np.float32)
-        #check_two_tensor_operation('binary_crossentropy', label, (4, 2), WITH_NP)
-        #check_two_tensor_operation('binary_crossentropy', label, (4, 2),
-        #                           WITH_NP, from_logits=True)
+        check_two_tensor_operation('binary_crossentropy', label, (4, 2), WITH_NP)
+        check_two_tensor_operation('binary_crossentropy', label, (4, 2),
+                                   WITH_NP, from_logits=True)
         check_two_tensor_operation('categorical_crossentropy', label, (4, 2),
                                    WITH_NP, cntk_two_dynamicity=True)
         check_two_tensor_operation('categorical_crossentropy', label, (4, 2),
@@ -1701,13 +1701,13 @@ class TestBackend(object):
     #        assert_allclose(res[0, :], ref, atol=1e-05)
     #    else:
     #        assert_allclose(res[:, 0], ref, atol=1e-05)
-    #
-    #@pytest.mark.skipif(K.backend() != 'tensorflow',
+
+    #@pytest.mark.skipif(K.backend() != 'tensorflow' and K.backend() != 'phylanx',
     #                    reason='Test adapted from tensorflow.')
     #def test_ctc_decode_greedy(self):
     #    """Test two batch entries - best path decoder."""
     #    max_time_steps = 6
-    #
+
     #    seq_len_0 = 4
     #    input_prob_matrix_0 = np.asarray(
     #        [[1.0, 0.0, 0.0, 0.0],  # t=0
@@ -1717,10 +1717,10 @@ class TestBackend(object):
     #         [0.0, 0.0, 0.0, 0.0],  # t=4 (ignored)
     #         [0.0, 0.0, 0.0, 0.0]],  # t=5 (ignored)
     #        dtype=np.float32)
-    #
+
     #    seq_len_1 = 5
     #    # dimensions are time x depth
-    #
+
     #    input_prob_matrix_1 = np.asarray(
     #        [[0.1, 0.9, 0.0, 0.0],  # t=0
     #         [0.0, 0.9, 0.1, 0.0],  # t=1
@@ -1729,30 +1729,30 @@ class TestBackend(object):
     #         [0.9, 0.1, 0.0, 0.0],  # t=4
     #         [0.0, 0.0, 0.0, 0.0]],  # t=5 (ignored)
     #        dtype=np.float32)
-    #
+
     #    # len max_time_steps array of batch_size x depth matrices
     #    inputs = [np.vstack([input_prob_matrix_0[t, :],
     #                         input_prob_matrix_1[t, :]])
     #              for t in range(max_time_steps)]
-    #
+
     #    # change tensorflow order to keras backend order
     #    inputs = np.asarray(inputs).transpose((1, 0, 2))
-    #
+
     #    # batch_size length vector of sequence_lengths
     #    input_length = np.array([seq_len_0, seq_len_1], dtype=np.int32)
-    #
+
     #    decode_pred_np, log_prob_pred_np = KNP.ctc_decode(inputs,
     #                                                      input_length, greedy=True)
     #    inputs = K.variable(inputs)
     #    input_length = K.variable(input_length)
     #    decode_pred_tf, log_prob_pred_tf = K.ctc_decode(inputs,
     #                                                    input_length, greedy=True)
-    #
+
     #    assert len(decode_pred_tf) == 1
-    #
+
     #    decode_pred = K.eval(decode_pred_tf[0])
     #    log_prob_pred = K.eval(log_prob_pred_tf)
-    #
+
     #    assert np.alltrue(decode_pred_np == decode_pred)
     #    assert np.allclose(log_prob_pred_np, log_prob_pred)
 
@@ -1954,19 +1954,19 @@ class TestBackend(object):
     #        K.arange(10),
     #        dtype=K.floatx()
     #    ))
-    #
+
     #    assert (10,) == kx.shape
     #    assert (10,) == kx2.shape
     #    assert_allclose(x.sum(axis=1), kx, atol=1e-05)
     #    assert_allclose(kx, kx2, atol=1e-05)
 
-    #@pytest.mark.skipif(K.backend() == 'cntk', reason='Not supported.')
-    #def test_foldl(self):
-    #    x = np.random.rand(10, 3).astype(np.float32)
-    #    kx = K.eval(K.foldl(lambda a, b: a + b, K.variable(x)))
-    #
-    #    assert (3,) == kx.shape
-    #    assert_allclose(x.sum(axis=0), kx, atol=1e-05)
+    @pytest.mark.skipif(K.backend() == 'cntk', reason='Not supported.')
+    def test_foldl(self):
+        x = np.random.rand(10, 3).astype(np.float32)
+        kx = K.eval(K.foldl(lambda a, b: a + b, K.variable(x)))
+
+        assert (3,) == kx.shape
+        assert_allclose(x.sum(axis=0), kx, atol=1e-05)
 
     #@pytest.mark.skipif(K.backend() == 'cntk', reason='Not supported.')
     #def test_foldr(self):
@@ -1978,47 +1978,47 @@ class TestBackend(object):
     #    vx = K.variable(x)
     #    p1 = K.eval(K.foldl(lambda a, b: a * b, vx))
     #    p2 = K.eval(K.foldr(lambda a, b: a * b, vx))
-    #
+
     #    assert p1 < p2
     #    assert 9e-38 < p2 <= 1e-37
 
-    #@pytest.mark.skipif(K.backend() == 'cntk',
-    #                    reason='cntk has issues with negative number.')
-    #def test_arange(self):
-    #    for test_value in (-20, 0, 1, 10):
-    #        a_list = []
-    #        dtype_list = []
-    #        for k in WITH_NP:
-    #            t = k.arange(test_value)
-    #            a = k.eval(t)
-    #            assert np.array_equal(a, np.arange(test_value))
-    #            dtype_list.append(k.dtype(t))
-    #            a_list.append(a)
+    @pytest.mark.skipif(K.backend() == 'cntk',
+                        reason='cntk has issues with negative number.')
+    def test_arange(self):
+        for test_value in (-20, 0, 1, 10):
+            a_list = []
+            dtype_list = []
+            for k in WITH_NP:
+                t = k.arange(test_value)
+                a = k.eval(t)
+                assert np.array_equal(a, np.arange(test_value))
+                dtype_list.append(k.dtype(t))
+                a_list.append(a)
 
-    #        for i in range(len(a_list) - 1):
-    #            assert np.array_equal(a_list[i], a_list[i + 1])
+            for i in range(len(a_list) - 1):
+                assert np.array_equal(a_list[i], a_list[i + 1])
 
-    #    for start, stop, step in ((0, 5, 1), (-5, 5, 2), (0, 1, 2)):
-    #        a_list = []
-    #        for k in WITH_NP:
-    #            a = k.eval(k.arange(start, stop, step))
-    #            assert np.array_equal(a, np.arange(start, stop, step))
-    #            a_list.append(a)
-    #        for i in range(len(a_list) - 1):
-    #            assert np.array_equal(a_list[i], a_list[i + 1])
+        for start, stop, step in ((0, 5, 1), (-5, 5, 2), (0, 1, 2)):
+            a_list = []
+            for k in WITH_NP:
+                a = k.eval(k.arange(start, stop, step))
+                assert np.array_equal(a, np.arange(start, stop, step))
+                a_list.append(a)
+            for i in range(len(a_list) - 1):
+                assert np.array_equal(a_list[i], a_list[i + 1])
 
-    #    for dtype in ('int32', 'int64', 'float32', 'float64'):
-    #        for k in WITH_NP:
-    #            t = k.arange(10, dtype=dtype)
-    #            assert k.dtype(t) == dtype
+        for dtype in ('int32', 'int64', 'float32', 'float64'):
+            for k in WITH_NP:
+                t = k.arange(10, dtype=dtype)
+                assert k.dtype(t) == dtype
 
-    #    start = K.constant(1, dtype='int32')
-    #    t = K.arange(start)
-    #    assert len(K.eval(t)) == 1
+        start = K.constant(1, dtype='int32')
+        t = K.arange(start)
+        assert len(K.eval(t)) == 1
 
-    #    start = K.constant(-1, dtype='int32')
-    #    t = K.arange(start)
-    #    assert len(K.eval(t)) == 0
+        start = K.constant(-1, dtype='int32')
+        t = K.arange(start)
+        assert len(K.eval(t)) == 0
 
     #@pytest.mark.parametrize('training', [True, False])
     #def test_in_train_phase(self, training):
