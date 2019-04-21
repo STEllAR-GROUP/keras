@@ -33,8 +33,8 @@ from .load_backend import random_normal_variable
 from .load_backend import count_params
 #from .load_backend import cast
 #from .load_backend import update
-#from .load_backend import update_add
-#from .load_backend import update_sub
+from .load_backend import update_add
+from .load_backend import update_sub
 #from .load_backend import moving_average_update
 from .load_backend import dot
 #from .load_backend import batch_dot

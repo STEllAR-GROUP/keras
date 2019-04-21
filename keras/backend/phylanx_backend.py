@@ -7,6 +7,8 @@ import numpy as np
 from phylanx import Phylanx, PhylanxSession, execution_tree
 from .common import floatx
 from .common import epsilon
+from .common import normalize_data_format
+#from phylanx.plugins.keras import in_top_k
 
 PhylanxSession.init(1)
 
@@ -37,7 +39,6 @@ def learning_phase():
 def set_learning_phase(value):
 	global _LEARNING_PHASE
 	_LEARNING_PHASE = value
-
 
 # not tested in the backend, should work on both variables and placeholders
 @Phylanx
@@ -600,8 +601,21 @@ def binary_crossentropy_eager(target, output, from_logits):
 def binary_crossentropy(target, output, from_logits=False):
 	return binary_crossentropy_eager.lazy(target, output, from_logits)
 
+
+#@Phylanx
+#def sparse_categorical_crossentropy_eager(target, output, from_logits, axis):
+#	return sparse_categorical_crossentropy(target, output, from_logits, axis)[0]
+
 #def sparse_categorical_crossentropy(target, output, from_logits=False, axis=-1):
-#	return categorical_crossentropy_eager.lazy(target, output, from_logits, axis)
+#	return sparse_categorical_crossentropy_eager.lazy(target, output, from_logits, axis)
+
+
+#@Phylanx
+#def in_top_k_eager(predictions, targets, k):
+#	return in_top_k(predictions, targets, k)
+
+#def in_top_k(predictions, targets, k):
+#	return in_top_k_eager.lazy(predictions, targets, k)
 
 
 @Phylanx
@@ -852,4 +866,47 @@ def ctc_decode_eager(y_pred, input_length, greedy=True, beam_width=100,
 
 def ctc_decode(y_pred, input_length, greedy=True, beam_width=100,
 			   top_paths=1, merge_repeated=False):
-	return ctc_decode_eager(y_pred, input_length, greedy, beam_width, top_paths)
+	return ctc_decode_eager.lazy(y_pred, input_length, greedy, beam_width, top_paths)
+
+
+def update_add(x, increment):
+	x += increment
+	return x
+
+
+def update_sub(x, decrement):
+	x -= decrement
+	return x
+
+
+def update(x, new_x):
+	x = new_x
+	return x
+
+
+#@Phylanx
+#def conv1d_eager(x, kernel, strides=1, padding='valid', dilation_rate=1):
+#	return conv1d(x, kernel, padding=padding, strides=strides)
+
+#def conv1d(x, kernel, strides=1, padding='valid', data_format=None, dilation_rate=1):
+#	data_format = normalize_data_format(data_format)
+#	if data_format == "channels_first":
+#		if(x.shape[1] != kernel.shape[1]):
+#			raise ValueError("number of input channels does not match "
+#			"its corresponding in the kernel")
+#	else:
+#		batch, _, channels_in = x.shape
+#		_, k_channels_in, channels_out = kernel.shape
+#		if(channels_in != k_channels_in):
+#			raise ValueError("number of input channels does not match "
+#			"its corresponding in the kernel")
+#		z = []
+#		for i in range(batch):
+#			y = []
+#			input_image = x[i,:,:]
+#			for c in range(channels_out):
+#				y.append(conv1d_eager.lazy(input_image, kernel[:,:,c], strides, padding, dilation_rate))
+#			y = np.stack(y, axis=1)
+#			z.append(y)
+#		z = np.stack(z,axis=0)
+#		return z
