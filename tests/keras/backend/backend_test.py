@@ -1178,36 +1178,36 @@ class TestBackend(object):
                                    from_logits=True)
 
 
-    #def test_in_top_k(self):
-    #    batch_size = 20
-    #    num_classes = 10
+    def test_in_top_k(self):
+        batch_size = 20
+        num_classes = 10
 
-    #    # Random prediction test case
-    #    predictions = np.random.random((batch_size, num_classes)).astype('float32')
-    #    targets = np.random.randint(num_classes, size=batch_size, dtype='int32')
+        # Random prediction test case
+        predictions = np.random.random((batch_size, num_classes)).astype('float32')
+        targets = np.random.randint(num_classes, size=batch_size, dtype='int32')
 
-    #    # (k == 0 or k > num_classes) does not raise an error
-    #    # but just return an unmeaningful tensor.
-    #    for k in range(1, 2 if K.backend() == 'cntk' else (num_classes + 1)):
-    #        z_list = [b.eval(b.in_top_k(b.variable(predictions, dtype='float32'),
-    #                                    b.variable(targets, dtype='int32'), k))
-    #                  for b in WITH_NP]
-    #        assert_list_pairwise(z_list)
+        # (k == 0 or k > num_classes) does not raise an error
+        # but just return an unmeaningful tensor.
+        for k in range(1, 2 if K.backend() == 'cntk' else (num_classes + 1)):
+            z_list = [b.eval(b.in_top_k(b.variable(predictions, dtype='float32'),
+                                        b.variable(targets, dtype='int32'), k))
+                      for b in WITH_NP]
+            assert_list_pairwise(z_list)
 
-    #    # Identical prediction test case:
-    #    # randomly set half of the predictions to an identical value
-    #    num_identical = num_classes // 2
-    #    for i in range(batch_size):
-    #        idx_identical = np.random.choice(num_classes,
-    #                                         size=num_identical, replace=False)
-    #        predictions[i, idx_identical] = predictions[i, 0]
-    #    targets = np.zeros(batch_size, dtype='int32')
+        # Identical prediction test case:
+        # randomly set half of the predictions to an identical value
+        num_identical = num_classes // 2
+        for i in range(batch_size):
+            idx_identical = np.random.choice(num_classes,
+                                             size=num_identical, replace=False)
+            predictions[i, idx_identical] = predictions[i, 0]
+        targets = np.zeros(batch_size, dtype='int32')
 
-    #    for k in range(1, 2 if K.backend() == 'cntk' else (num_classes + 1)):
-    #        z_list = [b.eval(b.in_top_k(b.variable(predictions, dtype='float32'),
-    #                                    b.variable(targets, dtype='int32'), k))
-    #                  for b in WITH_NP]
-    #        assert_list_pairwise(z_list)
+        for k in range(1, 2 if K.backend() == 'cntk' else (num_classes + 1)):
+            z_list = [b.eval(b.in_top_k(b.variable(predictions, dtype='float32'),
+                                        b.variable(targets, dtype='int32'), k))
+                      for b in WITH_NP]
+            assert_list_pairwise(z_list)
 
     #@pytest.mark.parametrize('op,input_shape,kernel_shape,padding,data_format', [
     #    ('conv1d', (2, 8, 2), (3, 2, 3), 'same', 'channels_last'),

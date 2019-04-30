@@ -32,10 +32,10 @@ from .load_backend import random_uniform_variable
 from .load_backend import random_normal_variable
 from .load_backend import count_params
 #from .load_backend import cast
-#from .load_backend import update
+from .load_backend import update
 from .load_backend import update_add
 from .load_backend import update_sub
-#from .load_backend import moving_average_update
+from .load_backend import moving_average_update
 from .load_backend import dot
 #from .load_backend import batch_dot
 from .load_backend import transpose
@@ -120,8 +120,8 @@ from .load_backend import hard_sigmoid
 from .load_backend import tanh
 from .load_backend import dropout
 from .load_backend import l2_normalize
-#from .load_backend import in_top_k
-#from .load_backend import conv1d
+from .load_backend import in_top_k
+from .load_backend import conv1d
 #from .load_backend import separable_conv1d
 #from .load_backend import conv2d
 #from .load_backend import separable_conv2d
