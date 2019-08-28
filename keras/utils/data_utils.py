@@ -250,7 +250,7 @@ def _hash_file(fpath, algorithm='sha256', chunk_size=65535):
     # Example
 
     ```python
-        >>> from keras.data_utils import _hash_file
+        >>> from keras.utils.data_utils import _hash_file
         >>> _hash_file('/path/to/file.zip')
         'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
     ```
@@ -541,6 +541,7 @@ class OrderedEnqueuer(SequenceEnqueuer):
     def __init__(self, sequence, use_multiprocessing=False, shuffle=False):
         super(OrderedEnqueuer, self).__init__(sequence, use_multiprocessing)
         self.shuffle = shuffle
+        self.end_of_epoch_signal = threading.Event()
 
     def _get_executor_init(self, workers):
         """Get the Pool initializer for multiprocessing.
@@ -561,9 +562,10 @@ class OrderedEnqueuer(SequenceEnqueuer):
 
     def _run(self):
         """Submits request to the executor and queue the `Future` objects."""
-        sequence = list(range(len(self.sequence)))
-        self._send_sequence()  # Share the initial sequence
         while True:
+            sequence = list(range(len(self.sequence)))
+            self._send_sequence()  # Share the initial sequence
+
             if self.shuffle:
                 random.shuffle(sequence)
 
@@ -584,7 +586,12 @@ class OrderedEnqueuer(SequenceEnqueuer):
 
             # Call the internal on epoch end.
             self.sequence.on_epoch_end()
-            self._send_sequence()  # Update the pool
+            # communicate on_epoch_end to the main thread
+            self.end_of_epoch_signal.set()
+
+    def join_end_of_epoch(self):
+        self.end_of_epoch_signal.wait(timeout=30)
+        self.end_of_epoch_signal.clear()
 
     def get(self):
         """Creates a generator to extract data from the queue.

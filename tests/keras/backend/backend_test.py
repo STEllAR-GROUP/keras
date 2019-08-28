@@ -53,8 +53,8 @@ else:
 
 
 def check_dtype(var, dtype):
-    if K.backend() == 'theano' or K.backend() == 'phylanx':
-        assert var.dtype == dtype
+    if K.backend() == 'tensorflow':
+        assert dtype in str(var.dtype.name)
     else:
         assert dtype in str(var.dtype)
 
@@ -219,8 +219,11 @@ def check_rnn_operation(step_function_k,
         constants=constants_np,
         **kwargs)
     # note that numpy reference implementation is independent of `unroll` argument
-
-    for unroll in [True, False]:
+    if 'unroll' in kwargs:
+        unroll_options = [kwargs.pop('unroll')]
+    else:
+        unroll_options = [True, False]
+    for unroll in unroll_options:
         last_output_k, output_k, last_states_k = K.rnn(
             step_function_k,
             inputs_k,
@@ -783,13 +786,49 @@ class TestBackend(object):
     #                            mask_np=kwargs.pop('mask', None),
     #                            **kwargs)
 
-    #def test_rnn_additional_states(self):
-    #    # implement a simple RNN with an additional state
-    #    # whose shape is different from that of the output
+    #@pytest.mark.skipif(K.backend() == 'theano', reason='Not supported')
+    #def test_rnn_unroll_with_len_1(self):
     #    num_samples = 4
     #    input_dim = 5
     #    output_dim = 3
-    #    timesteps = 6
+
+    #    _, x = parse_shape_or_val((num_samples, 1, input_dim))
+    #    _, h0 = parse_shape_or_val((num_samples, output_dim))
+    #    _, wi = parse_shape_or_val((input_dim, output_dim))
+    #    _, wh = parse_shape_or_val((output_dim, output_dim))
+
+    #    wi_k = K.variable(wi)
+    #    wh_k = K.variable(wh)
+
+    #    def get_step_function(backend, w_i, w_h):
+
+    #        def simple_rnn(inputs, states):
+    #            assert len(states) == 1
+    #            h = states[0]
+    #            y = backend.dot(inputs, w_i) + backend.dot(h, w_h)
+    #            return y, [y]
+
+    #        return simple_rnn
+
+    #    kwargs_list = [
+    #        {'go_backwards': False},
+    #        {'go_backwards': True},
+    #    ]
+    #    for kwargs in kwargs_list:
+    #        check_rnn_operation(step_function_k=get_step_function(K, wi_k, wh_k),
+    #                            step_function_np=get_step_function(KNP, wi, wh),
+    #                            inputs_np=x,
+    #                            initial_states_np=[h0],
+    #                            unroll=True,
+    #                            **kwargs)
+
+    def test_rnn_additional_states(self):
+        # implement a simple RNN with an additional state
+        # whose shape is different from that of the output
+        num_samples = 4
+        input_dim = 5
+        output_dim = 3
+        timesteps = 6
 
     #    _, x = parse_shape_or_val((num_samples, timesteps, input_dim))
     #    _, h0 = parse_shape_or_val((num_samples, output_dim))
@@ -2108,6 +2147,7 @@ class TestBackend(object):
     #        cfg = K.get_session()._config
     #        assert cfg.intra_op_parallelism_threads == threads
     #        assert cfg.inter_op_parallelism_threads == threads
+
 
 if __name__ == '__main__':
     pytest.main([__file__])

@@ -480,8 +480,6 @@ def test_recursion():
         j_tf = tf.placeholder(dtype=K.floatx())
         k_tf = tf.placeholder(dtype=K.floatx())
         m_tf, n_tf = tf_model([j_tf, k_tf])
-        assert m_tf.get_shape().as_list() == [None, 64]
-        assert n_tf.get_shape().as_list() == [None, 5]
 
         # test merge
         layers.concatenate([j_tf, k_tf], axis=1)
@@ -838,6 +836,26 @@ def test_constant_initializer_with_numpy():
 
     yaml_str = model.to_yaml()
     model_from_yaml(yaml_str).summary()
+
+
+@pytest.mark.skipif(K.backend() == 'cntk',
+                    reason='Float64 not supported with CNTK.')
+def test_initialization_dtype():
+    class TestLayer(Layer):
+        def __init__(self):
+            super(TestLayer, self).__init__(dtype='int64')
+            self.w = self.add_weight('w', [], initializer=Constant(1))
+
+    layer = TestLayer()
+    assert K.dtype(layer.w) == 'int64'
+
+    class TestModel(Model):
+        def __init__(self):
+            super(TestModel, self).__init__(dtype='int64')
+            self.w = self.add_weight('w', [], initializer=Constant(1))
+
+    model = TestModel()
+    assert K.dtype(model.w) == 'int64'
 
 
 if __name__ == '__main__':
