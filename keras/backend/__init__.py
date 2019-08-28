@@ -89,7 +89,7 @@ from .load_backend import batch_flatten
 from .load_backend import expand_dims
 from .load_backend import squeeze
 from .load_backend import temporal_padding
-#from .load_backend import spatial_2d_padding
+from .load_backend import spatial_2d_padding
 #from .load_backend import spatial_3d_padding
 from .load_backend import stack
 from .load_backend import one_hot
@@ -122,8 +122,7 @@ from .load_backend import dropout
 from .load_backend import l2_normalize
 from .load_backend import in_top_k
 from .load_backend import conv1d
-#from .load_backend import separable_conv1d
-#from .load_backend import conv2d
+from .load_backend import separable_conv1d#from .load_backend import conv2d
 #from .load_backend import separable_conv2d
 #from .load_backend import conv2d_transpose
 #from .load_backend import depthwise_conv2d
@@ -131,7 +130,7 @@ from .load_backend import conv1d
 #from .load_backend import conv3d_transpose
 #from .load_backend import pool2d
 #from .load_backend import pool3d
-#from .load_backend import bias_add
+from .load_backend import bias_add
 from .load_backend import random_normal
 from .load_backend import random_uniform
 from .load_backend import random_binomial

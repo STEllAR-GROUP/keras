@@ -267,39 +267,39 @@ class TestBackend(object):
         check_single_tensor_operation('eye', (3, 2), WITH_NP, shape_or_val=False)
         check_single_tensor_operation('eye', (3, 4), WITH_NP, shape_or_val=False)
 
-        #check_single_tensor_operation('ones', (3, 5, 10, 8),
-        #                              WITH_NP, shape_or_val=False)
-        #check_single_tensor_operation('zeros', (3, 5, 10, 8),
-        #                              WITH_NP, shape_or_val=False)
-        #
-        #check_single_tensor_operation('ones_like', (3, 5, 10, 8), WITH_NP)
-        #check_single_tensor_operation('zeros_like', (3, 5, 10, 8), WITH_NP)
+        check_single_tensor_operation('ones', (3, 5, 10, 8),
+                                      WITH_NP, shape_or_val=False)
+        check_single_tensor_operation('zeros', (3, 5, 10, 8),
+                                      WITH_NP, shape_or_val=False)
+
+        check_single_tensor_operation('ones_like', (3, 5, 10, 8), WITH_NP)
+        check_single_tensor_operation('zeros_like', (3, 5, 10, 8), WITH_NP)
 
 
     def test_linear_operations(self):
         check_two_tensor_operation('dot', (4, 2), (2, 4), WITH_NP)
         check_two_tensor_operation('dot', (4, 2), (5, 2, 3), WITH_NP)
 
-    #    check_two_tensor_operation('batch_dot', (4, 2, 3), (4, 5, 3),
-    #                               WITH_NP, cntk_two_dynamicity=True, axes=(2, 2))
-    #    check_two_tensor_operation('batch_dot', (4, 2, 3), (4, 3),
-    #                               WITH_NP, cntk_two_dynamicity=True, axes=(2, 1))
-    #    check_two_tensor_operation('batch_dot', (4, 2), (4, 2, 3),
-    #                               WITH_NP, cntk_two_dynamicity=True, axes=(1, 1))
-    #    check_two_tensor_operation('batch_dot', (32, 20), (32, 20),
-    #                               WITH_NP, cntk_two_dynamicity=True, axes=1)
-    #    check_two_tensor_operation('batch_dot', (32, 20), (32, 20),
-    #                               WITH_NP, cntk_two_dynamicity=True, axes=(1, 1))
-    #    check_two_tensor_operation('batch_dot', (4, 2, 3), (4, 5, 3),
-    #                               WITH_NP, axes=(2, 2))
-    #    check_two_tensor_operation('batch_dot', (4, 2, 3), (4, 3),
-    #                               WITH_NP, axes=(2, 1))
-    #    check_two_tensor_operation('batch_dot', (4, 2), (4, 2, 3),
-    #                               WITH_NP, axes=(1, 1))
-    #    check_two_tensor_operation('batch_dot', (32, 20), (32, 20),
-    #                               WITH_NP, axes=1)
-    #    check_two_tensor_operation('batch_dot', (32, 20), (32, 20),
-    #                               WITH_NP, axes=(1, 1))
+        check_two_tensor_operation('batch_dot', (4, 2, 3), (4, 5, 3),
+                                   WITH_NP, cntk_two_dynamicity=True, axes=(2, 2))
+        check_two_tensor_operation('batch_dot', (4, 2, 3), (4, 3),
+                                   WITH_NP, cntk_two_dynamicity=True, axes=(2, 1))
+        check_two_tensor_operation('batch_dot', (4, 2), (4, 2, 3),
+                                   WITH_NP, cntk_two_dynamicity=True, axes=(1, 1))
+        check_two_tensor_operation('batch_dot', (32, 20), (32, 20),
+                                   WITH_NP, cntk_two_dynamicity=True, axes=1)
+        check_two_tensor_operation('batch_dot', (32, 20), (32, 20),
+                                   WITH_NP, cntk_two_dynamicity=True, axes=(1, 1))
+        check_two_tensor_operation('batch_dot', (4, 2, 3), (4, 5, 3),
+                                   WITH_NP, axes=(2, 2))
+        check_two_tensor_operation('batch_dot', (4, 2, 3), (4, 3),
+                                   WITH_NP, axes=(2, 1))
+        check_two_tensor_operation('batch_dot', (4, 2), (4, 2, 3),
+                                   WITH_NP, axes=(1, 1))
+        check_two_tensor_operation('batch_dot', (32, 20), (32, 20),
+                                   WITH_NP, axes=1)
+        check_two_tensor_operation('batch_dot', (32, 20), (32, 20),
+                                   WITH_NP, axes=(1, 1))
 
         check_single_tensor_operation('transpose', (4, 2), WITH_NP)
         check_single_tensor_operation('reverse', (4, 3, 2), WITH_NP, axes=1)
@@ -390,7 +390,7 @@ class TestBackend(object):
         check_single_tensor_operation('batch_flatten', (20, 2, 5), WITH_NP,
                                       cntk_dynamicity=True)
         check_single_tensor_operation('expand_dims', (4, 3), WITH_NP, axis=-1)
-    #    check_single_tensor_operation('expand_dims', (4, 3, 2), WITH_NP, axis=1)
+        check_single_tensor_operation('expand_dims', (4, 3, 2), WITH_NP, axis=1)
         check_single_tensor_operation('squeeze', (4, 3, 1), WITH_NP, axis=2)
         check_single_tensor_operation('squeeze', (4, 1, 1), WITH_NP, axis=1)
     #    check_composed_tensor_operations('reshape', {'shape': (4, 3, 1, 1)},
@@ -1221,12 +1221,12 @@ class TestBackend(object):
     #    ('conv3d', (2, 3, 5, 4, 6), (3, 2, 4, 3, 4), 'valid', 'channels_first'),
     #    ('conv3d', (1, 2, 2, 2, 1), (2, 2, 2, 1, 1), 'valid', 'channels_last'),
     #    ('conv3d', (1, 3, 5, 4, 2), (3, 3, 3, 2, 3), 'same', 'channels_last'),
-    #])
-    #def test_conv(self, op, input_shape, kernel_shape, padding, data_format):
-    #    check_two_tensor_operation(
-    #        op, input_shape, kernel_shape, WITH_NP,
-    #        padding=padding, data_format=data_format,
-    #        cntk_dynamicity=True)
+    ])
+    def test_conv(self, op, input_shape, kernel_shape, padding, data_format):
+        check_two_tensor_operation(
+            op, input_shape, kernel_shape, WITH_NP,
+            padding=padding, data_format=data_format,
+            cntk_dynamicity=True)
 
     #@pytest.mark.parametrize(
     #    'op,input_shape,kernel_shape,output_shape,padding,data_format', [
@@ -1247,11 +1247,11 @@ class TestBackend(object):
     #        output_shape=output_shape, padding=padding, data_format=data_format,
     #        cntk_dynamicity=True)
 
-    #@pytest.mark.skipif((K.backend() == 'cntk' and KC.dev.type() == 0),
-    #                    reason='cntk only supports dilated conv on GPU')
-    #@pytest.mark.parametrize(
-    #    'op,input_shape,kernel_shape,padding,data_format,dilation_rate', [
-    #        ('conv1d', (2, 8, 3), (4, 3, 2), 'valid', 'channels_last', 2),
+    @pytest.mark.skipif((K.backend() == 'cntk' and KC.dev.type() == 0),
+                        reason='cntk only supports dilated conv on GPU')
+    @pytest.mark.parametrize(
+        'op,input_shape,kernel_shape,padding,data_format,dilation_rate', [
+            ('conv1d', (2, 8, 3), (4, 3, 2), 'valid', 'channels_last', 2),
     #        ('conv1d', (2, 3, 8), (4, 3, 2), 'valid', 'channels_first', 2),
     #        ('conv2d', (2, 8, 9, 3), (3, 3, 3, 2),
     #         'same', 'channels_last', (2, 2)),
@@ -1261,18 +1261,18 @@ class TestBackend(object):
     #         'valid', 'channels_last', (2, 2, 2)),
     #        ('conv3d', (2, 3, 5, 4, 6), (2, 2, 3, 3, 4),
     #         'same', 'channels_first', (2, 2, 2)),
-    #    ])
-    #def test_dilated_conv(self,
-    #                      op,
-    #                      input_shape,
-    #                      kernel_shape,
-    #                      padding,
-    #                      data_format,
-    #                      dilation_rate):
-    #    check_two_tensor_operation(
-    #        op, input_shape, kernel_shape, WITH_NP,
-    #        padding=padding, data_format=data_format,
-    #        dilation_rate=dilation_rate, cntk_dynamicity=True)
+        ])
+    def test_dilated_conv(self,
+                          op,
+                          input_shape,
+                          kernel_shape,
+                          padding,
+                          data_format,
+                          dilation_rate):
+        check_two_tensor_operation(
+            op, input_shape, kernel_shape, WITH_NP,
+            padding=padding, data_format=data_format,
+            dilation_rate=dilation_rate, cntk_dynamicity=True)
 
     #@pytest.mark.skipif((K.backend() == 'cntk' and KC.dev.type() == 0),
     #                    reason='cntk only supports dilated conv transpose on GPU')
@@ -1347,44 +1347,44 @@ class TestBackend(object):
     #        padding=padding, data_format=data_format, pool_mode=pool_mode,
     #        cntk_dynamicity=True)
 
-    #@pytest.mark.parametrize(
-    #    'op,input_shape,kernel_shape,depth_multiplier,padding,data_format', [
-    #        ('separable_conv1d', (2, 8, 2), (3,), 1, 'same', 'channels_last'),
-    #        ('separable_conv1d', (1, 8, 2), (3,), 2, 'valid', 'channels_last'),
+    @pytest.mark.parametrize(
+        'op,input_shape,kernel_shape,depth_multiplier,padding,data_format', [
+            ('separable_conv1d', (2, 8, 2), (3,), 1, 'same', 'channels_last'),
+            ('separable_conv1d', (1, 8, 2), (3,), 2, 'valid', 'channels_last'),
     #        ('separable_conv2d', (2, 3, 4, 5), (3, 3), 1, 'same', 'channels_first'),
     #        ('separable_conv2d', (2, 3, 5, 6), (4, 3), 2, 'valid', 'channels_first'),
     #        ('separable_conv2d', (1, 6, 5, 3), (3, 4), 1, 'valid', 'channels_last'),
     #        ('separable_conv2d', (1, 7, 6, 3), (3, 3), 2, 'same', 'channels_last'),
-    #    ])
-    #def test_separable_conv(self,
-    #                        op,
-    #                        input_shape,
-    #                        kernel_shape,
-    #                        depth_multiplier,
-    #                        padding,
-    #                        data_format):
-    #    if data_format == 'channels_first':
-    #        input_depth = input_shape[1]
-    #    else:
-    #        input_depth = input_shape[-1]
-    #    _, x = parse_shape_or_val(input_shape)
-    #    _, depthwise = parse_shape_or_val(kernel_shape +
-    #                                      (input_depth, depth_multiplier))
-    #    _, pointwise = parse_shape_or_val((1,) * len(kernel_shape) +
-    #                                      (input_depth * depth_multiplier, 7))
-    #    y1 = KNP.separable_conv(x, depthwise, pointwise,
-    #                            padding=padding, data_format=data_format)
-    #    if K.backend() == 'cntk':
-    #        _, cntk_func = cntk_func_tensors(
-    #            op, [input_shape, depthwise, pointwise],
-    #            padding=padding, data_format=data_format)
-    #        y2 = cntk_func([x])[0]
-    #    else:
-    #        y2 = K.eval(getattr(K, op)(
-    #            K.variable(x),
-    #            K.variable(depthwise), K.variable(pointwise),
-    #            padding=padding, data_format=data_format))
-    #    assert_allclose(y1, y2, atol=1e-05)
+        ])
+    def test_separable_conv(self,
+                            op,
+                            input_shape,
+                            kernel_shape,
+                            depth_multiplier,
+                            padding,
+                            data_format):
+        if data_format == 'channels_first':
+            input_depth = input_shape[1]
+        else:
+            input_depth = input_shape[-1]
+        _, x = parse_shape_or_val(input_shape)
+        _, depthwise = parse_shape_or_val(kernel_shape +
+                                          (input_depth, depth_multiplier))
+        _, pointwise = parse_shape_or_val((1,) * len(kernel_shape) +
+                                          (input_depth * depth_multiplier, 7))
+        y1 = KNP.separable_conv(x, depthwise, pointwise,
+                                padding=padding, data_format=data_format)
+        if K.backend() == 'cntk':
+            _, cntk_func = cntk_func_tensors(
+                op, [input_shape, depthwise, pointwise],
+                padding=padding, data_format=data_format)
+            y2 = cntk_func([x])[0]
+        else:
+            y2 = K.eval(getattr(K, op)(
+                K.variable(x),
+                K.variable(depthwise), K.variable(pointwise),
+                padding=padding, data_format=data_format))
+        assert_allclose(y1, y2, atol=1e-05)
 
     def test_random_normal(self):
         # test standard normal as well as a normal with a different set of parameters
@@ -1567,28 +1567,29 @@ class TestBackend(object):
         check_single_tensor_operation('temporal_padding', (2, 3, 4),
                                       WITH_NP, padding=(1, 2))
 
-    #def test_spatial_2d_padding(self):
-    #    padding = ((1, 2), (2, 1))
-    #    for data_format in ['channels_first', 'channels_last']:
-    #        shape = (5, 5)
-    #        if data_format == 'channels_first':
-    #            x_shape = (1, 3) + shape
-    #        else:
-    #            x_shape = (1,) + shape + (3,)
-    #        check_single_tensor_operation('spatial_2d_padding', x_shape, WITH_NP,
-    #                                      padding=padding, data_format=data_format)
-    #    # Check handling of dynamic shapes.
-    #    if K in [KTF, KTH]:
-    #        x = K.placeholder(shape=(1, None, None, 1))
-    #        y = K.spatial_2d_padding(x, padding=padding, data_format='channels_last')
-    #        assert K.int_shape(y) == (1, None, None, 1)
-    #
-    #    # Test invalid use cases
-    #    xval = np.random.random(x_shape)
-    #    with pytest.raises(ValueError):
-    #        K.spatial_2d_padding(K.variable(xval), padding=padding,
-    #                             data_format='channels_middle')
-    #
+    def test_spatial_2d_padding(self):
+        padding = ((1, 2), (2, 1))
+        ###for data_format in ['channels_first', 'channels_last']:
+        for data_format in ['channels_last']:
+            shape = (5, 5)
+            if data_format == 'channels_first':
+                x_shape = (1, 3) + shape
+            else:
+                x_shape = (1,) + shape + (3,)
+            check_single_tensor_operation('spatial_2d_padding', x_shape, WITH_NP,
+                                          padding=padding, data_format=data_format)
+        ## Check handling of dynamic shapes.
+        #if K in [KTF, KTH]:
+        #    x = K.placeholder(shape=(1, None, None, 1))
+        #    y = K.spatial_2d_padding(x, padding=padding, data_format='channels_last')
+        #    assert K.int_shape(y) == (1, None, None, 1)
+
+        # Test invalid use cases
+        xval = np.random.random(x_shape)
+        with pytest.raises(ValueError):
+            K.spatial_2d_padding(K.variable(xval), padding=padding,
+                                 data_format='channels_middle')
+
     #def test_spatial_3d_padding(self):
     #    padding = ((1, 2), (2, 1), (1, 2))
     #    for data_format in ['channels_first', 'channels_last']:
@@ -1611,31 +1612,33 @@ class TestBackend(object):
     #        K.spatial_3d_padding(K.variable(xval), padding=padding,
     #                             data_format='channels_middle')
 
-    #def test_bias_add(self):
-    #    for data_format in ['channels_first', 'channels_last']:
-    #        for shape in [(), (3,), (2, 3), (5, 3, 2)]:
-    #            if data_format == 'channels_first':
-    #                x_shape = (1, 4) + shape
-    #            else:
-    #                x_shape = (1,) + shape + (4,)
-    #            bias_shape = (4,)
-    #            check_two_tensor_operation('bias_add', x_shape, bias_shape,
-    #                                       WITH_NP, cntk_dynamicity=True,
-    #                                       data_format=data_format)
-    #
-    #        if data_format == 'channels_first':
-    #            x_shape = (20, 6, 10)
-    #        else:
-    #            x_shape = (20, 10, 6)
-    #        check_two_tensor_operation('bias_add', x_shape, (10, 6),
-    #                                   WITH_NP, cntk_dynamicity=True,
-    #                                   data_format=data_format)
-    #
-    #    # Test invalid use cases
-    #    x = K.variable(np.random.random(x_shape))
-    #    b = K.variable(np.random.random(bias_shape))
-    #    with pytest.raises(ValueError):
-    #        K.bias_add(x, b, data_format='channels_middle')
+    def test_bias_add(self):
+        ###for data_format in ['channels_first', 'channels_last']:
+        for data_format in ['channels_last']:
+            ###for shape in [(), (3,), (2, 3), (5, 3, 2)]:
+            for shape in [(), (3,), (2, 3)]:
+                if data_format == 'channels_first':
+                    x_shape = (1, 4) + shape
+                else:
+                    x_shape = (1,) + shape + (4,)
+                bias_shape = (4,)
+                check_two_tensor_operation('bias_add', x_shape, bias_shape,
+                                           WITH_NP, cntk_dynamicity=True,
+                                           data_format=data_format)
+
+            if data_format == 'channels_first':
+                x_shape = (20, 6, 10)
+            else:
+                x_shape = (20, 10, 6)
+            check_two_tensor_operation('bias_add', x_shape, (10, 6),
+                                       WITH_NP, cntk_dynamicity=True,
+                                       data_format=data_format)
+
+        # Test invalid use cases
+        x = K.variable(np.random.random(x_shape))
+        b = K.variable(np.random.random(bias_shape))
+        with pytest.raises(ValueError):
+            K.bias_add(x, b, data_format='channels_middle')
 
     #@pytest.mark.skipif(K.backend() != 'theano',
     #                    reason='Specific to Theano.')

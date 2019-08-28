@@ -62,7 +62,6 @@ def eye(size, dtype=None, name=None):
 	return variable(eye_eager.lazy(n, m, dtype))
 
 
-# 4d
 @Phylanx
 def ones_eager(shape, dtype=None, name=None):
 	return np.ones(shape, dtype=dtype)
@@ -71,7 +70,6 @@ def ones(shape, dtype=None, name=None):
 	return ones_eager.lazy(shape, dtype)
 
 
-# 4d
 @Phylanx
 def zeros_eager(shape, dtype=None, name=None):
 	return np.zeros(shape, dtype=dtype)
@@ -80,7 +78,6 @@ def zeros(shape, dtype=None, name=None):
 	return zeros_eager.lazy(shape, dtype)
 
 
-# 4d
 @Phylanx
 def ones_like_eager(x, dtype=None, name=None):
 	return np.ones_like(x, dtype=dtype)
@@ -89,7 +86,6 @@ def ones_like(x, dtype=None, name=None):
 	return ones_like_eager.lazy(x)
 
 
-# 4d
 @Phylanx
 def zeros_like_eager(x, dtype=None, name=None):
 	return np.zeros_like(x, dtype=dtype)
@@ -195,7 +191,6 @@ def batch_flatten(x):
 	return batch_flatten_eager.lazy(x)
 
 
-# needs 4d
 @Phylanx
 def expand_dims_eager(x, axis):
 	return np.expand_dims(x, axis)
@@ -891,48 +886,40 @@ def moving_average_update(x, value, momentum):
 
 
 @Phylanx
-def conv1d_eager(x, kernel, strides=1, padding='valid', dilation_rate=1):
-	return conv1d(x, kernel, padding=padding, strides=strides, dilation_rate=dilation_rate)
+def conv1d_eager(x, kernel, strides, padding, dilation_rate):
+	return conv1d(x, kernel, padding, strides, dilation_rate)
 
 def conv1d(x, kernel, strides=1, padding='valid', data_format=None, dilation_rate=1):
-	data_format = normalize_data_format(data_format)
-	if data_format == "channels_last":
-		batch, _, channels_in = x.shape
-		_, k_channels_in, channels_out = kernel.shape
-		if(channels_in != k_channels_in):
-			raise ValueError("number of input channels does not match "
-			"its corresponding in the kernel")
-		z = []
-		for i in range(batch):
-			_z = []
-			input_image = x[i,:,:]
-			for j in range(channels_out):
-				__z = []
-				for k in range(channels_in):
-					__z.append(conv1d_eager.lazy(input_image[:,k], kernel[:,k,j]),
-			   strides, padding, dilation_rate)
-				_z.append(np.sum(__z,axis=0))
-			_z = np.stack(_z, axis=1)
-			z.append(_z)
-		z = np.stack(z,axis=0)
-		return z
-	else: # channels_first
-		batch, channels_in, _ = x.shape
-		_, k_channels_in, channels_out = kernel.shape
-		if(channels_in != k_channels_in):
-			raise ValueError("number of input channels does not match "
-			"its corresponding in the kernel")
-		z = []
-		for i in range(batch):
-			_z = []
-			input_image = x[i,:,:]
-			for j in range(channels_out):
-				__z = []
-				for k in range(channels_in):
-					__z.append(conv1d_eager.lazy(input_image[k,:], kernel[:,k,j]),
-			   strides, padding, dilation_rate)
-				_z.append(np.sum(__z,axis=0))
-			_z = np.stack(_z, axis=0)
-			z.append(_z)
-		z = np.stack(z,axis=0)
-		return z
+	if data_format != "channels_last":
+		raise ValueError("conv1d having a data format other than channels_last is not supported by Phylanx")
+	return conv1d_eager.lazy(x, kernel, strides, padding, dilation_rate)
+
+
+@Phylanx
+def separable_conv1d_eager(x, depthwise_kernel, pointwise_kernel, strides, padding, dilation_rate):
+	return separable_conv1d(x, depthwise_kernel, pointwise_kernel, padding, strides, dilation_rate)
+
+def separable_conv1d(x, depthwise_kernel, pointwise_kernel, strides=1, padding='valid', data_format=None, dilation_rate=1):
+	if data_format != "channels_last":
+		raise ValueError("separable_conv1d having a data format other than channels_last is not supported by Phylanx")
+	return separable_conv1d_eager.lazy(x, depthwise_kernel, pointwise_kernel, strides, padding, dilation_rate)
+
+
+@Phylanx
+def spatial_2d_padding_eager(x, padding):
+	return spatial_2d_padding(x, padding)
+
+def spatial_2d_padding(x, padding=((1, 1), (1, 1)), data_format=None):
+	if data_format != "channels_last":
+		raise ValueError("spatial_2d_padding having a data format other than channels_last is not supported by Phylanx")
+	return spatial_2d_padding_eager.lazy(x, padding)
+
+
+@Phylanx
+def bias_add_eager(x, bias):
+	return bias_add(x, bias)
+
+def bias_add(x, bias, data_format=None):
+	if data_format != "channels_last":
+		raise ValueError("bias_add having a data format other than channels_last is not supported by Phylanx")
+	return bias_add_eager.lazy(x, bias)
