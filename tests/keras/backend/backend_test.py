@@ -576,29 +576,29 @@ class TestBackend(object):
     def test_log(self):
         check_single_tensor_operation('log', (4, 2), WITH_NP)
 
-    #@pytest.mark.skipif(K.backend() == 'theano',
-    #                    reason='theano returns tuples for update ops')
-    #def test_update_add(self):
-    #    x = np.random.randn(3, 4)
-    #    x_var = K.variable(x)
-    #    increment = np.random.randn(3, 4)
+    @pytest.mark.skipif(K.backend() == 'theano',
+                        reason='theano returns tuples for update ops')
+    def test_update_add(self):
+        x = np.random.randn(3, 4)
+        x_var = K.variable(x)
+        increment = np.random.randn(3, 4)
 
-    #    x += increment
-    #    K.eval(K.update_add(x_var, increment))
+        x += increment
+        K.eval(K.update_add(x_var, increment))
 
-    #    assert_allclose(x, K.eval(x_var), atol=1e-05)
+        assert_allclose(x, K.eval(x_var), atol=1e-05)
 
-    #@pytest.mark.skipif(K.backend() == 'theano',
-    #                    reason='theano returns tuples for update ops')
-    #def test_update_sub(self):
-    #    x = np.random.randn(3, 4)
-    #    x_var = K.variable(x)
-    #    decrement = np.random.randn(3, 4)
+    @pytest.mark.skipif(K.backend() == 'theano',
+                        reason='theano returns tuples for update ops')
+    def test_update_sub(self):
+        x = np.random.randn(3, 4)
+        x_var = K.variable(x)
+        decrement = np.random.randn(3, 4)
 
-    #    x -= decrement
-    #    K.eval(K.update_sub(x_var, decrement))
+        x -= decrement
+        K.eval(K.update_sub(x_var, decrement))
 
-    #    assert_allclose(x, K.eval(x_var), atol=1e-05)
+        assert_allclose(x, K.eval(x_var), atol=1e-05)
 
     #@pytest.mark.skipif(K.backend() == 'cntk',
     #                    reason='cntk doesn\'t support gradient in this way.')
@@ -1080,28 +1080,28 @@ class TestBackend(object):
     #    result = K.eval(K.logsumexp(K.variable(x_np), axis=0))
     #    assert_allclose(result, 1e4, rtol=1e-5)
 
-    #def test_switch(self):
-    #    # scalar
-    #    val = np.random.random()
-    #    z_list = []
-    #    for k in WITH_NP:
-    #        x = k.variable(val)
-    #        x = k.switch(k.greater_equal(x, 0.5), x * 0.1, x * 0.2)
-    #        z_list.append(k.eval(x))
-    #    assert_list_pairwise(z_list)
-    #    # non scalar
-    #    shapes = []
-    #    shapes.append([(4, 3, 2), (4, 3, 2), (4, 3, 2)])
-    #    shapes.append([(4, 3,), (4, 3, 2), (4, 3, 2)])
-    #    shapes.append([(4,), (4, 3, 2), (4, 3, 2)])
-    #    for s in shapes:
-    #        z_list = []
-    #        arrays = list(map(np.random.random, s))
-    #        for k in WITH_NP:
-    #            x, then_expr, else_expr = map(k.variable, arrays)
-    #            cond = k.greater_equal(x, 0.5)
-    #            z_list.append(k.eval(k.switch(cond, then_expr, else_expr)))
-    #        assert_list_pairwise(z_list)
+    def test_switch(self):
+        # scalar
+        val = np.random.random()
+        z_list = []
+        for k in WITH_NP:
+            x = k.variable(val)
+            x = k.switch(k.greater_equal(x, 0.5), x * 0.1, x * 0.2)
+            z_list.append(k.eval(x))
+        assert_list_pairwise(z_list)
+        # non scalar
+        shapes = []
+        shapes.append([(4, 3, 2), (4, 3, 2), (4, 3, 2)])
+        shapes.append([(4, 3,), (4, 3, 2), (4, 3, 2)])
+        shapes.append([(4,), (4, 3, 2), (4, 3, 2)])
+        for s in shapes:
+            z_list = []
+            arrays = list(map(np.random.random, s))
+            for k in WITH_NP:
+                x, then_expr, else_expr = map(k.variable, arrays)
+                cond = k.greater_equal(x, 0.5)
+                z_list.append(k.eval(k.switch(cond, then_expr, else_expr)))
+            assert_list_pairwise(z_list)
 
     #def test_dropout(self):
     #    val = np.random.random((100, 100))
@@ -1178,41 +1178,41 @@ class TestBackend(object):
                                    from_logits=True)
 
 
-    #def test_in_top_k(self):
-    #    batch_size = 20
-    #    num_classes = 10
-    #
-    #    # Random prediction test case
-    #    predictions = np.random.random((batch_size, num_classes)).astype('float32')
-    #    targets = np.random.randint(num_classes, size=batch_size, dtype='int32')
-    #
-    #    # (k == 0 or k > num_classes) does not raise an error
-    #    # but just return an unmeaningful tensor.
-    #    for k in range(1, 2 if K.backend() == 'cntk' else (num_classes + 1)):
-    #        z_list = [b.eval(b.in_top_k(b.variable(predictions, dtype='float32'),
-    #                                    b.variable(targets, dtype='int32'), k))
-    #                  for b in WITH_NP]
-    #        assert_list_pairwise(z_list)
-    #
-    #    # Identical prediction test case:
-    #    # randomly set half of the predictions to an identical value
-    #    num_identical = num_classes // 2
-    #    for i in range(batch_size):
-    #        idx_identical = np.random.choice(num_classes,
-    #                                         size=num_identical, replace=False)
-    #        predictions[i, idx_identical] = predictions[i, 0]S
-    #    targets = np.zeros(batch_size, dtype='int32')
-    #
-    #    for k in range(1, 2 if K.backend() == 'cntk' else (num_classes + 1)):
-    #        z_list = [b.eval(b.in_top_k(b.variable(predictions, dtype='float32'),
-    #                                    b.variable(targets, dtype='int32'), k))
-    #                  for b in WITH_NP]
-    #        assert_list_pairwise(z_list)
+    def test_in_top_k(self):
+        batch_size = 20
+        num_classes = 10
+
+        # Random prediction test case
+        predictions = np.random.random((batch_size, num_classes)).astype('float32')
+        targets = np.random.randint(num_classes, size=batch_size, dtype='int32')
+
+        # (k == 0 or k > num_classes) does not raise an error
+        # but just return an unmeaningful tensor.
+        for k in range(1, 2 if K.backend() == 'cntk' else (num_classes + 1)):
+            z_list = [b.eval(b.in_top_k(b.variable(predictions, dtype='float32'),
+                                        b.variable(targets, dtype='int32'), k))
+                      for b in WITH_NP]
+            assert_list_pairwise(z_list)
+
+        # Identical prediction test case:
+        # randomly set half of the predictions to an identical value
+        num_identical = num_classes // 2
+        for i in range(batch_size):
+            idx_identical = np.random.choice(num_classes,
+                                             size=num_identical, replace=False)
+            predictions[i, idx_identical] = predictions[i, 0]
+        targets = np.zeros(batch_size, dtype='int32')
+
+        for k in range(1, 2 if K.backend() == 'cntk' else (num_classes + 1)):
+            z_list = [b.eval(b.in_top_k(b.variable(predictions, dtype='float32'),
+                                        b.variable(targets, dtype='int32'), k))
+                      for b in WITH_NP]
+            assert_list_pairwise(z_list)
 
     #@pytest.mark.parametrize('op,input_shape,kernel_shape,padding,data_format', [
     #    ('conv1d', (2, 8, 2), (3, 2, 3), 'same', 'channels_last'),
-    #    ('conv1d', (1, 8, 2), (3, 2, 3), 'valid', 'channels_last'),
-    #    ('conv1d', (1, 2, 8), (3, 2, 3), 'valid', 'channels_first'),
+        #('conv1d', (1, 8, 2), (3, 2, 3), 'valid', 'channels_last'),
+        #('conv1d', (1, 2, 8), (3, 2, 3), 'valid', 'channels_first'),
     #    ('conv2d', (2, 3, 4, 5), (3, 3, 3, 2), 'same', 'channels_first'),
     #    ('conv2d', (2, 3, 5, 6), (4, 3, 3, 4), 'valid', 'channels_first'),
     #    ('conv2d', (1, 6, 5, 3), (3, 4, 3, 2), 'valid', 'channels_last'),
@@ -2057,19 +2057,19 @@ class TestBackend(object):
     #    t = K.arange(start)
     #    assert len(K.eval(t)) == 0
 
-    #@pytest.mark.parametrize('training', [True, False])
-    #def test_in_train_phase(self, training):
-    #    check_two_tensor_operation('in_train_phase', (3, 3), (2, 2), WITH_NP,
-    #                               training=training)
-    #    check_two_tensor_operation('in_train_phase', (2, 3), (2, 3), WITH_NP,
-    #                               training=training)
+    @pytest.mark.parametrize('training', [True, False])
+    def test_in_train_phase(self, training):
+        check_two_tensor_operation('in_train_phase', (3, 3), (2, 2), WITH_NP,
+                                   training=training)
+        check_two_tensor_operation('in_train_phase', (2, 3), (2, 3), WITH_NP,
+                                   training=training)
 
-    #@pytest.mark.parametrize('training', [True, False])
-    #def test_in_test_phase(self, training):
-    #    check_two_tensor_operation('in_test_phase', (3, 3), (2, 2), WITH_NP,
-    #                               training=training)
-    #    check_two_tensor_operation('in_test_phase', (2, 3), (2, 3), WITH_NP,
-    #                               training=training)
+    @pytest.mark.parametrize('training', [True, False])
+    def test_in_test_phase(self, training):
+        check_two_tensor_operation('in_test_phase', (3, 3), (2, 2), WITH_NP,
+                                   training=training)
+        check_two_tensor_operation('in_test_phase', (2, 3), (2, 3), WITH_NP,
+                                   training=training)
 
     @pytest.mark.parametrize('dtype', ['', 'beerfloat', 123])
     def test_setfloatx_incorrect_values(self, dtype):
@@ -2078,7 +2078,7 @@ class TestBackend(object):
         with pytest.raises(ValueError):
             K.set_floatx(dtype)
         assert K.floatx() == old_floatx
-    #
+
     @pytest.mark.parametrize('dtype', ['float16', 'float32', 'float64'])
     def test_setfloatx_correct_values(self, dtype):
         # Keep track of the old value

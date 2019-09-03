@@ -32,10 +32,10 @@ from .load_backend import random_uniform_variable
 from .load_backend import random_normal_variable
 from .load_backend import count_params
 #from .load_backend import cast
-#from .load_backend import update
-#from .load_backend import update_add
-#from .load_backend import update_sub
-#from .load_backend import moving_average_update
+from .load_backend import update
+from .load_backend import update_add
+from .load_backend import update_sub
+from .load_backend import moving_average_update
 from .load_backend import dot
 #from .load_backend import batch_dot
 from .load_backend import transpose
@@ -105,8 +105,8 @@ from .load_backend import print_tensor
 #from .load_backend import stop_gradient
 #from .load_backend import rnn
 from .load_backend import switch
-#from .load_backend import in_train_phase
-#from .load_backend import in_test_phase
+from .load_backend import in_train_phase
+from .load_backend import in_test_phase
 from .load_backend import relu
 from .load_backend import elu
 from .load_backend import softmax
@@ -120,8 +120,8 @@ from .load_backend import hard_sigmoid
 from .load_backend import tanh
 from .load_backend import dropout
 from .load_backend import l2_normalize
-#from .load_backend import in_top_k
-#from .load_backend import conv1d
+from .load_backend import in_top_k
+from .load_backend import conv1d
 #from .load_backend import separable_conv1d
 #from .load_backend import conv2d
 #from .load_backend import separable_conv2d
