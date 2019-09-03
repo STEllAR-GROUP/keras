@@ -37,7 +37,7 @@ from .load_backend import update_add
 from .load_backend import update_sub
 from .load_backend import moving_average_update
 from .load_backend import dot
-#from .load_backend import batch_dot
+from .load_backend import batch_dot
 from .load_backend import transpose
 #from .load_backend import gather
 from .load_backend import max
@@ -79,7 +79,7 @@ from .load_backend import concatenate
 from .load_backend import reshape
 from .load_backend import permute_dimensions
 from .load_backend import resize_images
-from .load_backend import resize_volumes
+#from .load_backend import resize_volumes
 from .load_backend import repeat_elements
 from .load_backend import repeat
 #from .load_backend import arange
@@ -94,7 +94,7 @@ from .load_backend import spatial_2d_padding
 from .load_backend import stack
 from .load_backend import one_hot
 from .load_backend import reverse
-#from .load_backend import slice
+from .load_backend import slice
 from .load_backend import get_value
 #from .load_backend import batch_get_value
 #from .load_backend import set_value
@@ -122,13 +122,14 @@ from .load_backend import dropout
 from .load_backend import l2_normalize
 from .load_backend import in_top_k
 from .load_backend import conv1d
-from .load_backend import separable_conv1d#from .load_backend import conv2d
+from .load_backend import separable_conv1d
+#from .load_backend import conv2d
 #from .load_backend import separable_conv2d
 #from .load_backend import conv2d_transpose
 #from .load_backend import depthwise_conv2d
 #from .load_backend import conv3d
 #from .load_backend import conv3d_transpose
-#from .load_backend import pool2d
+from .load_backend import pool2d
 #from .load_backend import pool3d
 from .load_backend import bias_add
 from .load_backend import random_normal
