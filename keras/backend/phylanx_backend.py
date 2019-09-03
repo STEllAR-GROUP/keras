@@ -654,19 +654,14 @@ def truncated_normal(shape, mean=0.0, stddev=1.0, dtype=None, seed=None):
 	return truncated_normal_eager.lazy(shape, mean, stddev)
 
 
-#not representing the other interpolation, bilinear, 4d
 @Phylanx
-def resize_images_eager(x, height_factor, width_factor, data_format):
-	if data_format == 'channels_first':
-		x = np.repeat(x, height_factor, 2)
-		x = np.repeat(x, width_factor, 3)
-	elif data_format == 'channels_last':
-		x = np.repeat(x, height_factor, 1)
-		x = np.repeat(x, width_factor, 2)
-	return x
+def resize_images_eager(x, height_factor, width_factor, interpolation):
+	return resize_images(x, height_factor, width_factor, interpolation)
 
-def resize_images(x, height_factor, width_factor, data_format, interpolation='nearest'):
-	return resize_images_eager.lazy(x, height_factor, width_factor, data_format)
+def resize_images(x, height_factor, width_factor, data_format, interpolation="nearest"):
+	if data_format != "channels_last":
+		raise ValueError("resize_images having a data format other than channels_last is not supported by Phylanx")
+	return resize_images_eager.lazy(x, height_factor, width_factor, interpolation)
 
 
 # needs 5d
@@ -805,29 +800,22 @@ def dtype(x):
 	return execution_tree.variable(x, dtype).dtype
 
 
-#@Phylanx
-#def max_pool_eager(x, pool_size, strides, padding):
-#	return max_pool(x, pool_size, padding, strides)
+@Phylanx
+def max_pool2d_eager(x, pool_size, strides, padding):
+	return max_pool2d(x, pool_size, padding, strides)
 
-#def pool2d(x, pool_size, strides=(1, 1), padding='valid',
-#		   data_format=None, pool_mode='max'):
-#	#if data_format == 'channels_last':
-#	#	if x.ndim == 4:
-#	#		x = np.transpose(x, (0, 3, 1, 2))
-#	#	else:
-#	#		raise IndexError("Constraint is the projection function to be "
-#	#					"applied to the variable after an optimizer update")
+@Phylanx
+def avg_pool2d_eager(x, pool_size, strides, padding):
+	return avg_pool2d(x, pool_size, padding, strides)
 
-#	if pool_mode == "max":
-#		z = []
-#		for fourth in range(3):
-#			y = []
-#			for third in range(3):
-#				y.append(max_pool_eager.lazy(x[fourth,third,:,:], pool_size, strides, padding))
-#			y = np.stack(y, axis=0)
-#			z.append(y)
-#		z = np.stack(z,axis=0)
-#		return z
+def pool2d(x, pool_size, strides=(1, 1), padding='valid', data_format=None, pool_mode='max'):
+	if data_format != "channels_last":
+		raise ValueError("pool2d having a data format other than channels_last is not supported by Phylanx")
+	if pool_mode == "max":
+		return max_pool2d_eager.lazy(x, pool_size, strides, padding)
+	elif pool_mode == "avg":
+		return avg_pool2d_eager.lazy(x, pool_size, strides, padding)
+	raise ValueError("the `pool_mode` can be either `max` or `avg`")
 
 
 def is_sparse(tensor):
