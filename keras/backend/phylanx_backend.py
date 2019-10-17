@@ -41,14 +41,6 @@ def set_learning_phase(value):
 	global _LEARNING_PHASE
 	_LEARNING_PHASE = value
 
-# not tested in the backend, should work on both variables and placeholders
-@Phylanx
-def ndim_eager(x):
-	return ndim(x)
-
-def ndim(x):
-	return ndim_eager.lazy(x)
-
 
 @Phylanx
 def eye_eager(n, m, dtype="float64", name=None):
@@ -911,3 +903,40 @@ def bias_add(x, bias, data_format=None):
 	if data_format != "channels_last":
 		raise ValueError("bias_add having a data format other than channels_last is not supported by Phylanx")
 	return bias_add_eager.lazy(x, bias)
+
+
+def placeholder(shape=None, ndim=None, dtype=None, sparse=False, name=None):
+	print("shape",shape)
+	if shape:
+		if not shape[0]:
+			value = np.zeros((1,shape[1]))
+	if dtype is None:
+		dtype = floatx()
+	from phylanx.ast.physl import PhySL
+	if isinstance(value, PhySL.eval_wrapper):
+		return execution_tree.variable(value.code(), dtype)
+	if isinstance(value, execution_tree.variable):
+		return value
+	return execution_tree.variable(value, dtype=dtype, name=name)
+
+
+def name_scope(name):
+	return name
+
+def is_tensor(x):
+	return True
+
+def is_keras_tensor(x):
+	if not is_tensor(x):
+		raise ValueError('Unexpectedly found an instance of type `' +
+						 str(type(x)) + '`. '
+						 'Expected a symbolic tensor instance.')
+	return hasattr(x, '_keras_history')
+
+# not tested in the backend, should work on both variables and placeholders
+#@Phylanx
+#def ndim_eager(x):
+#	return ndim(x)
+
+def ndim(x):
+	return len(shape(x))

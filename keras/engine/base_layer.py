@@ -245,7 +245,8 @@ class Layer(object):
                             name=name,
                             constraint=constraint)
         if regularizer is not None:
-            with K.name_scope('weight_regularizer'):
+            if True:
+            #with K.name_scope('weight_regularizer'):
                 self.add_loss(regularizer(weight))
         if trainable:
             self._trainable_weights.append(weight)
@@ -400,7 +401,8 @@ class Layer(object):
         """
         if isinstance(inputs, list):
             inputs = inputs[:]
-        with K.name_scope(self.name):
+        if True:
+        #with K.name_scope(self.name):
             # Handle laying building (weight creating, input spec locking).
             if not self.built:
                 # Raise exceptions in case the input is not compatible
@@ -493,7 +495,8 @@ class Layer(object):
             # Apply activity regularizer if any:
             if (hasattr(self, 'activity_regularizer') and
                     self.activity_regularizer is not None):
-                with K.name_scope('activity_regularizer'):
+                if True:
+                #with K.name_scope('activity_regularizer'):
                     regularization_losses = [
                         self.activity_regularizer(x)
                         for x in to_list(output)]

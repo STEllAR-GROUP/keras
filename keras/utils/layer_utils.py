@@ -250,6 +250,9 @@ def convert_dense_weights_data_format(dense,
 
 
 def get_source_inputs(tensor, layer=None, node_index=None):
+    print("tensor",tensor)
+    print("layer",layer)
+    print("node_index",node_index)
     """Returns the list of input tensors necessary to compute `tensor`.
 
     Output will always be a list of tensors

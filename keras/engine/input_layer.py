@@ -90,8 +90,8 @@ class InputLayer(Layer):
             input_tensor._keras_shape = batch_input_shape
         # Create an input node to add to self.outbound_node
         # and set output_tensors' _keras_history.
-        input_tensor._uses_learning_phase = False
-        input_tensor._keras_history = (self, 0, 0)
+        #input_tensor._uses_learning_phase = False
+        #input_tensor._keras_history = (self, 0, 0)
         Node(self,
              inbound_layers=[],
              node_indices=[],

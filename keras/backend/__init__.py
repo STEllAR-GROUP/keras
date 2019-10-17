@@ -13,9 +13,9 @@ from .load_backend import is_sparse
 from .load_backend import to_dense
 from .load_backend import variable
 from .load_backend import constant
-#from .load_backend import is_keras_tensor
-#from .load_backend import is_tensor
-#from .load_backend import placeholder
+from .load_backend import is_keras_tensor
+from .load_backend import is_tensor
+from .load_backend import placeholder
 #from .load_backend import is_placeholder
 from .load_backend import shape
 from .load_backend import int_shape
@@ -146,7 +146,7 @@ from .load_backend import foldr
 #from .load_backend import local_conv2d
 from .load_backend import backend
 from .load_backend import normalize_data_format
-#from .load_backend import name_scope
+from .load_backend import name_scope
 
 if backend() == 'theano':
     from .load_backend import pattern_broadcast
