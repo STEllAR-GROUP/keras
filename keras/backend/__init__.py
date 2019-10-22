@@ -6,7 +6,7 @@ from .load_backend import cast_to_floatx
 from .load_backend import image_data_format
 from .load_backend import set_image_data_format
 #from .load_backend import reset_uids
-#from .load_backend import get_uid
+from .load_backend import get_uid
 from .load_backend import learning_phase
 from .load_backend import set_learning_phase
 from .load_backend import is_sparse
@@ -16,11 +16,11 @@ from .load_backend import constant
 from .load_backend import is_keras_tensor
 from .load_backend import is_tensor
 from .load_backend import placeholder
-#from .load_backend import is_placeholder
+from .load_backend import is_placeholder
 from .load_backend import shape
 from .load_backend import int_shape
 from .load_backend import ndim
-#from .load_backend import dtype
+from .load_backend import dtype
 from .load_backend import eval
 from .load_backend import zeros
 from .load_backend import ones
@@ -31,7 +31,7 @@ from .load_backend import ones_like
 from .load_backend import random_uniform_variable
 from .load_backend import random_normal_variable
 from .load_backend import count_params
-#from .load_backend import cast
+from .load_backend import cast
 from .load_backend import update
 from .load_backend import update_add
 from .load_backend import update_sub

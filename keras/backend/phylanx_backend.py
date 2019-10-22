@@ -8,6 +8,7 @@ from phylanx import Phylanx, PhylanxSession, execution_tree
 from .common import floatx
 from .common import epsilon
 from .common import normalize_data_format
+from collections import defaultdict 
 
 PhylanxSession.init(1)
 
@@ -768,6 +769,7 @@ def int_shape(x):
 def shape(x):
 	return tuple(_int_shape(x))
 
+
 def get_variable_shape(x):
 	return int_shape(x)
 
@@ -912,14 +914,12 @@ def placeholder(shape=None, ndim=None, dtype=None, sparse=False, name=None):
 			value = np.zeros((1,shape[1]))
 	if dtype is None:
 		dtype = floatx()
-	from phylanx.ast.physl import PhySL
-	if isinstance(value, PhySL.eval_wrapper):
-		return execution_tree.variable(value.code(), dtype)
-	if isinstance(value, execution_tree.variable):
-		return value
-	return execution_tree.variable(value, dtype=dtype, name=name)
+	from phylanx.ast.physl import PhySL	
+	return execution_tree.variable(value, dtype=dtype, name="placeholder_")
 
-
+def is_placeholder(x):
+    return x.name=="placeholder_"
+    
 def name_scope(name):
 	return name
 
@@ -940,3 +940,15 @@ def is_keras_tensor(x):
 
 def ndim(x):
 	return len(shape(x))
+
+_UID_PREFIXES = defaultdict(int) 
+def get_uid(prefix=''): 
+    _UID_PREFIXES[prefix] += 1 
+    return _UID_PREFIXES[prefix]
+
+@Phylanx
+def cast_eager(x, dtype):
+  return astype(x,dtype) 
+ 
+def cast(x, dtype):
+    return cast_eager.lazy(x,dtype)

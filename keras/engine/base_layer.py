@@ -459,8 +459,8 @@ class Layer(object):
             inputs_ls = to_list(inputs)
             output_ls_copy = []
             for x in output_ls:
-                if x in inputs_ls:
-                    x = K.identity(x)
+#                if x in inputs_ls:
+#                    x = K.identity(x)
                 output_ls_copy.append(x)
             output = unpack_singleton(output_ls_copy)
 
