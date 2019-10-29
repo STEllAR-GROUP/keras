@@ -8,7 +8,7 @@ from phylanx import Phylanx, PhylanxSession, execution_tree
 from .common import floatx
 from .common import epsilon
 from .common import normalize_data_format
-from collections import defaultdict 
+from collections import defaultdict
 
 PhylanxSession.init(1)
 
@@ -21,9 +21,6 @@ def variable(value, dtype=None, name=None, constraint=None):
 	if constraint is not None:
 		raise TypeError("Constraint is the projection function to be "
 						"applied to the variable after an optimizer update")
-	from phylanx.ast.physl import PhySL
-	if isinstance(value, PhySL.eval_wrapper):
-		return execution_tree.variable(value.code(), dtype)
 	if isinstance(value, execution_tree.variable):
 		return value
 	return execution_tree.variable(value, dtype=dtype, name=name)
@@ -703,11 +700,10 @@ def one_hot(indices, num_classes):
 
 # tested in map_fn and gradient
 @Phylanx
-def sum_eager(x, axis, keepdims):
+def sum_eager(x, axis=None, keepdims=None):
 	return np.sum(x, axis, keepdims)
 
-def sum(x, axis=None, keepdims=False):
-	return sum_eager.lazy(x, axis, keepdims)
+sum = Phylanx.lazy(sum_eager)
 
 
 # 4d, 5d
@@ -724,7 +720,7 @@ def map_fn_eager(fn, elems):
 	return fmap(fn, elems)
 
 def map_fn(fn, elems, dtype=None):
-	return variable(map_fn_eager(fn, elems),dtype=dtype)
+	return variable(map_fn_eager(fn, elems), dtype=dtype)
 
 @Phylanx
 def foldl_eager(fn, elems, initializer, name):
@@ -786,9 +782,6 @@ def count_params(x):
 
 
 def dtype(x):
-	from phylanx.ast.physl import PhySL
-	if isinstance(x, PhySL.eval_wrapper):
-		return execution_tree.variable(x.code(), dtype).dtype
 	if isinstance(x, execution_tree.variable):
 		return x.dtype
 	return execution_tree.variable(x, dtype).dtype
@@ -914,12 +907,11 @@ def placeholder(shape=None, ndim=None, dtype=None, sparse=False, name=None):
 			value = np.zeros((1,shape[1]))
 	if dtype is None:
 		dtype = floatx()
-	from phylanx.ast.physl import PhySL	
 	return execution_tree.variable(value, dtype=dtype, name="placeholder_")
 
 def is_placeholder(x):
-    return x.name=="placeholder_"
-    
+	return x.name=="placeholder_"
+
 def name_scope(name):
 	return name
 
@@ -941,14 +933,13 @@ def is_keras_tensor(x):
 def ndim(x):
 	return len(shape(x))
 
-_UID_PREFIXES = defaultdict(int) 
-def get_uid(prefix=''): 
-    _UID_PREFIXES[prefix] += 1 
-    return _UID_PREFIXES[prefix]
+_UID_PREFIXES = defaultdict(int)
+def get_uid(prefix=''):
+	_UID_PREFIXES[prefix] += 1
+	return _UID_PREFIXES[prefix]
 
 @Phylanx
 def cast_eager(x, dtype):
-  return astype(x,dtype) 
- 
-def cast(x, dtype):
-    return cast_eager.lazy(x,dtype)
+	return astype(x,dtype)
+
+cast = Phylanx.lazy(cast_eager)
