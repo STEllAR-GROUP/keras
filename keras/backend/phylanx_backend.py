@@ -943,3 +943,10 @@ def cast_eager(x, dtype):
 	return astype(x,dtype)
 
 cast = Phylanx.lazy(cast_eager)
+
+@Phylanx
+def gather_eager(reference, indices):
+	return reference[indices]
+
+def gather(reference, indices):
+	return gather_eager.lazy(reference, indices)

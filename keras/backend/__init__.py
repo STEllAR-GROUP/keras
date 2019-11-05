@@ -39,7 +39,7 @@ from .load_backend import moving_average_update
 from .load_backend import dot
 from .load_backend import batch_dot
 from .load_backend import transpose
-#from .load_backend import gather
+from .load_backend import gather
 from .load_backend import max
 from .load_backend import min
 from .load_backend import sum
